@@ -1,0 +1,7 @@
+{
+    "board": "rp2040:rp2040:waveshare_rp2040_zero",
+    "configuration": "flash=2097152_0,freq=133,opt=Small,rtti=Disabled,stackprotect=Disabled,exceptions=Disabled,dbgport=Disabled,dbglvl=None,usbstack=picosdk,ipbtstack=ipv4only,uploadmethod=default",
+    "sketch": "oXs_logger_arduino.ino",
+    "output": "build",
+    "port": "COM11"
+}
