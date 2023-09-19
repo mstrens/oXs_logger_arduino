@@ -3,7 +3,7 @@
 #define VERSION "0.0.0"
 
 // Serial parameter reading data from oXs (use Serial2)
-#define SERIAL_IN_BAUDRATE 230400      // 23000 bytes/sec
+#define SERIAL_IN_BAUDRATE 115200 // 230400      // 23000 bytes/sec
 #define SERIAL_IN_RX_GPIO 9            // pin used to read the data
 #define SERIAL_IN_FIFO_LEN (1024*16)      // Size of uart fifo
 

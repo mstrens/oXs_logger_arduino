@@ -82,7 +82,10 @@ void printInstructions(){
     Serial.println("- To unselect data, enter DEL = xx / yy");
     Serial.println("      where xx and yy are the index of the data as defined here");   
     Serial.println("-To change (invert) led color, enter LED=N or LED=I");
-    Serial.println("   Note: some changes require a reset to be applied");
+    Serial.println("-To change the baudrate, enter BAUD= XXXXXX  (with XXXXXX = the baudrate e.g. 15200)");
+    Serial.println(" ");
+    Serial.println("   Note: some changes require a manual reset to be applied");
+    Serial.println(" ");
     Serial.println("- To get the content of currentt csv file, enter PF (it means Print File)");
     Serial.println(" ");
     Serial.println("-To get the current config, just press Enter");

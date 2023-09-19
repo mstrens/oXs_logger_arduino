@@ -88,8 +88,8 @@ void loop() {
     handleLedState();
     if ( ledState != STATE_NO_SD) {
         handleSerialIn();  // get data from UART, stored them, create csv record in a buffer and push the references to a queue
-        reportStats(5000);     // report some stats at some interval (msec)
-        printTestCount();    // just used to debug sending dummy data on Serial2 to simulate oXs
+        reportStats(60000);     // report some stats at some interval (msec)
+        //printTestCount();    // just used to debug sending dummy data on Serial2 to simulate oXs
         handleUSBCmd();
         //watchdog_update();
     }    

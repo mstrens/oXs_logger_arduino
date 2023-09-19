@@ -185,18 +185,21 @@ void handleSerialIn(){
     static uint32_t inData = 0; 
     uint32_t serialAvailable = 0;
     static uint32_t lastSerialInMs = 0;
+    
+    
     while (Serial2.available() ){
         serialAvailable = Serial2.available();
-        if (serialAvailable > maxSerialAvailable) maxSerialAvailable = serialAvailable; // keep trace of the % of filling fifo
-        
+        if (serialAvailable > maxSerialAvailable) maxSerialAvailable = serialAvailable; // keep trace of the % of filling fifo       
         c= Serial2.read( );
+        //Serial.println(c,HEX);
         if (c== 0X7E){
             // when a synchr is received after a previous valid record, then process previous group of data
             if ((tempTlmCount > 0 ) && (inState==IN_RECEIVING_TYPE)){
-                if ((millis() - lastSerialInMs) > 1000){  // check that we got at least some valid data within 1 sec
-                    lastSerialInMs = millis();
+                if ((millis() - lastSerialInMs) > 5000){  // check that we got at least some valid data within 5 sec
+                    Serial.print("No data within "); Serial.println(millis() - lastSerialInMs);
                     ledState = STATE_NO_DATA;             // when no data, we will change the led color
                 }
+                lastSerialInMs = millis();
                 // update the data in the cumulatieve table (one column for each data)
                 currentTlm[0X3F] = inTime;     // update the timestamp at idx 0X3F
                 for (uint8_t i=0; i<tempTlmCount; i++ ){  // update current tlm based on incoming data in 
@@ -256,7 +259,8 @@ void handleSerialIn(){
                 }
                 break;
             case IN_RECEIVING_TYPE:
-                
+                // to do : remove after debug
+                //if (c != 0XCB) {Serial.print("c ="); Serial.print(c,HEX); Serial.println(" ");}
                 inType= c & 0X3F ; // reset the first 2 bits (= number of leading zero)
                 inNb0Byte = c >> 6; //save number of leading zero
                 inState=IN_RECEIVING_DATA;

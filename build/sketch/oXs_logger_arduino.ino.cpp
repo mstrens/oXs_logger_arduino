@@ -88,9 +88,9 @@ void setup() {
         Serial.read();
     }
     
-    Serial2.setRX(SERIAL_IN_RX_GPIO);
+    Serial2.setRX(config.pinSerialRx);
     Serial2.setFIFOSize(SERIAL_IN_FIFO_LEN);
-    Serial2.begin(SERIAL_IN_BAUDRATE);
+    Serial2.begin(config.serialBaudrate);
     
     Serial.println("End of setup on core0");
     setupQueues();
@@ -103,8 +103,8 @@ void loop() {
     handleLedState();
     if ( ledState != STATE_NO_SD) {
         handleSerialIn();  // get data from UART, stored them, create csv record in a buffer and push the references to a queue
-        reportStats(5000);     // report some stats at some interval (msec)
-        printTestCount();    // just used to debug sending dummy data on Serial2 to simulate oXs
+        reportStats(60000);     // report some stats at some interval (msec)
+        //printTestCount();    // just used to debug sending dummy data on Serial2 to simulate oXs
         handleUSBCmd();
         //watchdog_update();
     }    

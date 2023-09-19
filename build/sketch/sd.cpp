@@ -137,7 +137,7 @@ uint logCsvHeader(){            // write csv header in the file
     //}
     
     //Serial.println("writing Time");
-    if (csvFile.write("Time (usec)") == 0){
+    if (csvFile.write("Time (msec)") == 0){
         csvFileError = 3;
         Serial.println("Error writing csvHeader 1");
         return csvFileError;
