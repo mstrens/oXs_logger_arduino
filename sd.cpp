@@ -11,6 +11,11 @@ extern CONFIG config;
 extern char const * listOfCsvFieldName[] ; 
 extern uint8_t ledState;
 
+extern uint32_t firstGpsDate; // store the first GPS date (to avoid race issue)
+extern uint32_t firstGpsTime; // idem for time
+extern uint8_t createDateTimeState; // flag to know if the file creation date and time is already registered
+                                 // 0 = date/time unknown, 1 date/time known but not yet registered on SD ,2 = registered  
+
 
 //  Change the value of SD_CS_PIN if you are using SPI and
 // SDCARD_SS_PIN is defined for the built-in SD on some boards.
@@ -143,7 +148,8 @@ uint logCsvHeader(){            // write csv header in the file
     }; 
     for (uint8_t i=0; i<63 ; i++){
     //Serial.println("writing comma");
-        if ( config.fieldToAdd[i]){                            // insert the data only if foreseen in the config
+        if (( config.fieldToAdd[i]) && (i != 1)){                            // insert the data only if foreseen in the config
+                                                                             // never insert i == 1 because GPS lat ond long are merged
             if (csvFile.write(",") == 0){                      // write the comma
                 csvFileError = 3;
                 Serial.println("Error writing , in csvHeader");
@@ -212,15 +218,21 @@ void logOnSD(uint32_t writeIdx , uint16_t len){    // return the time in usec
         lastSyncMillis = millis();
         //Serial.print(F("syncMicros:")); Serial.print(usec);
         //Serial.print(F(" maxWriteMicros:")); Serial.println(maxWriteMicros);
+    }
+    if ( createDateTimeState == 1){ // 1 means that date/time is known but not yet registered on SD (2 = registered)  
+        csvFile.timestamp(T_CREATE, (uint16_t) 2000+ (firstGpsDate>>24), (uint8_t) (firstGpsDate>>16), (uint8_t) (firstGpsDate>>8),\
+            (uint8_t) (firstGpsTime>>24), (uint8_t) (firstGpsTime>>16), (uint8_t) (firstGpsTime>>8) );
+        createDateTimeState = 2; // avoid to update the creation timestamp twice    
     }    
 }
 
+
 uint setupSdCard(){
     delay(1000);
-    SPI.setRX(SPI_RX);
-    SPI.setCS(SPI_CS);
-    SPI.setSCK(SPI_SCK);
-    SPI.setTX(SPI_TX);
+    SPI.setRX(config.pinSpiMiso);
+    SPI.setCS(config.pinSpiCs);
+    SPI.setSCK(config.pinSpiSclk);
+    SPI.setTX(config.pinSpiMosi);
 
     // Initialize SD.
     if (!sd.begin(SD_CONFIG)) {

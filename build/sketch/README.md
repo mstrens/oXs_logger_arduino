@@ -101,7 +101,7 @@ By default, all data's are selected.
 \
 Here the index of all oXs data's
 * 0: Latitude
-* 1: Longitude
+* 1: Longitude     note: in csv, Latitude and Longitude are merged in one field nameg GPS; so this index is always discarded 
 * 2: Gps groundspeed
 * 3: Gps Heading
 * 4: Gps Altitude

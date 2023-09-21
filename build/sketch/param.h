@@ -11,7 +11,7 @@ struct CONFIG{
     uint8_t pinSpiCs = SPI_CS;
     uint8_t pinSpiMiso = SPI_RX;
     uint8_t pinSpiMosi = SPI_TX;
-    uint8_t pinSPiSck = SPI_SCK; 
+    uint8_t pinSpiSclk = SPI_SCLK; 
     uint8_t pinSerialRx = SERIAL_IN_RX_GPIO;
     uint8_t pinLed = 16;
     uint8_t protocol = 'O' ; // O = oXs + csv

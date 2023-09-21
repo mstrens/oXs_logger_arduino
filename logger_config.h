@@ -4,8 +4,8 @@
 
 // Serial parameter reading data from oXs (use Serial2)
 #define SERIAL_IN_BAUDRATE 115200 // 230400      // 23000 bytes/sec
-#define SERIAL_IN_RX_GPIO 9            // pin used to read the data
-#define SERIAL_IN_FIFO_LEN (1024*16)      // Size of uart fifo
+#define SERIAL_IN_RX_GPIO 9            // pin used to read the data from oXs (on UART1) (gpio 5,9,21, 25)
+#define SERIAL_IN_FIFO_LEN (1024*16)      // Size of uart fifo that receives data from oXs
 
 // for testing we can generate dummu data using SERIAL1
 #define GENERATE_TEST_UART0_TX
@@ -20,13 +20,13 @@
 // SPI uses pin:
 // CS 5 // could be changed
 
-#define CSV_MAX_BUFFER_LEN  50000
-#define CSV_MAX_RECORD_LEN 500
+#define CSV_MAX_BUFFER_LEN  50000  // circular buffer used to store csv data before they are store on SD card 
+#define CSV_MAX_RECORD_LEN 500  // used to check that there is enough space before writing a csv reccord
 
 //----------------- for SPI
 #define SPI_RX   4  // MISO   0 4 16 20
 #define SPI_CS   5  // for CS 1 5 17 21
-#define SPI_SCK  6  // Clock  2 6 18 22
+#define SPI_SCLK  6  // Clock  2 6 18 22
 #define SPI_TX   7  // MOSI   3 7 19 23
 
 
@@ -34,8 +34,8 @@
 #define LAST_WRITTEN_QUEUE_LEN 500 // idem
 
 
-#define TEST_INTERVAL_US (1000*1000)
-
+#define TEST_INTERVAL_US (1000*1000)  // used when serial data are generate by this RP2040 (for debug only) with Serial1
+                             
 // long and lat are grouped in one csv field named Gps 
 #define LIST_OF_CSV_FIELD_NAME { "Gps", " ", "Gps groundspeed (m/s)" , "Gps Heading", "Gps Altitude(m)", "Gps Num Sat" ,\
         "Gps Date", "Gps Time", "Gps PDOP", "Gps home bearing" , "Gps home dist", "Volt 1 (V)",  "Current(A)", "Volt 3(V)" , "Volt 4(V)",\
@@ -55,3 +55,4 @@
                         0, 0, 0, 0, 0, 0, 0, 0,\
                         0, 0, 0, 0, 0, 0, 0, 0,\
                         0, 0, 0, 0, 0, 0, 0} 
+

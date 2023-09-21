@@ -19,6 +19,9 @@ In current version, the logger:
 * each "current" situation is then formatted in a CSV format and store on the SD card with the timestamp 
 * at regular interval (e.g. 10 sec), the logger synchronise the file on the Sd card in order to avoid loose of all data's on power down 
 * so, in case of power off, only the last seconds will be loosen
+
+Note: when oXs provide GPS date and time, the log file get a creation timestamp equal to the first date and time provided by oXs.
+There can be a delay because GPS has to get some satellites.
 ## -------  Hardware -----------------
 
 This project requires a board with a RP2040 processor like the rapsberry pi pico.
@@ -100,7 +103,7 @@ By default, all data's are selected.
 \
 Here the index of all oXs data's
 * 0: Latitude
-* 1: Longitude
+* 1: Longitude     note: in csv, Latitude and Longitude are merged in one field nameg GPS; so this index is always discarded 
 * 2: Gps groundspeed
 * 3: Gps Heading
 * 4: Gps Altitude

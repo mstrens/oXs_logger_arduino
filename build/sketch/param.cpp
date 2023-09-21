@@ -244,21 +244,63 @@ void processCmd(){  // process the command entered via usb; called when a full c
         }
     }
     
-    // change TLM pin
-    /*
-    if ( strcmp("TLM", pkey) == 0 ) { 
+    // change MISO pin
+    if ( strcmp("MISO", pkey) == 0 ) { 
         ui = strtoul(pvalue, &ptr, 10);
         if ( *ptr != 0x0){
-            printf("Error : pin must be an unsigned integer\n");
-        } else if ( !(ui <=29 or ui ==255)) {
-            printf("Error : pin must be in range 0/29 or 255\n");
+            Serial.println("Error : GPIO must be an unsigned integer\n");
+        } else if ( !(ui!=0 or ui!=4 or ui!=16 or ui!=20)) {   //0 4 16 20
+            Serial.println("Error : MISO GPIO must be 0, 4, 16 or 20\n");
         } else {    
-            //config.pinTlm = ui;
-            printf("Pin for telemetry = %u\n" , config.pinTlm );
+            config.pinSpiMiso = ui;
+            Serial.print("GPIO for MISO = ");Serial.println(config.pinSpiMiso);
             updateConfig = true;
         }
     }
-    */
+    
+    // change MOSI pin
+    if ( strcmp("MOSI", pkey) == 0 ) { 
+        ui = strtoul(pvalue, &ptr, 10);
+        if ( *ptr != 0x0){
+            Serial.println("Error : GPIO must be an unsigned integer\n");
+        } else if ( !(ui!=3 or ui!=7 or ui!=19 or ui!=23)) {   //3 7 19 23
+            Serial.println("Error : MOSI GPIO must be 3, 7, 19 or 23\n");
+        } else {    
+            config.pinSpiMosi = ui;
+            Serial.print("GPIO for MOSI = ");Serial.println(config.pinSpiMosi);
+            updateConfig = true;
+        }
+    }
+    
+    // change SCLK pin
+    if ( strcmp("SCLK", pkey) == 0 ) { 
+        ui = strtoul(pvalue, &ptr, 10);
+        if ( *ptr != 0x0){
+            Serial.println("Error : GPIO must be an unsigned integer\n");
+        } else if ( !(ui!=2 or ui!=6 or ui!=18 or ui!=22)) {   //2 6 18 22
+            Serial.println("Error : SCLK GPIO must be 2, 6, 18 or 22\n");
+        } else {    
+            config.pinSpiSclk = ui;
+            Serial.print("GPIO for SCLK = ");Serial.println(config.pinSpiSclk);
+            updateConfig = true;
+        }
+    }
+    
+    // change CS pin
+    if ( strcmp("CS", pkey) == 0 ) { 
+        ui = strtoul(pvalue, &ptr, 10);
+        if ( *ptr != 0x0){
+            Serial.println("Error : GPIO must be an unsigned integer");
+        } else if (ui>29) {   
+            Serial.println("Error : CS GPIO must be in range 0...29");
+        } else {    
+            config.pinSpiSclk = ui;
+            Serial.print("GPIO for SCLK = ");Serial.println(config.pinSpiSclk);
+            updateConfig = true;
+        }
+    }
+    
+
     // change for SDA pin
     /*
     if ( strcmp("SDA", pkey) == 0 ) { 
@@ -367,7 +409,7 @@ void checkConfig(){     // set configIsValid
     addPinToCount(config.pinSpiCs);
     addPinToCount(config.pinSpiMiso);
     addPinToCount(config.pinSpiMosi);
-    addPinToCount(config.pinSPiSck);
+    addPinToCount(config.pinSpiSclk);
     addPinToCount(config.pinSerialRx);
     addPinToCount(config.pinLed);
     
@@ -408,7 +450,7 @@ void printConfig(){
     Serial.print("    CS   = "); Serial.println(config.pinSpiCs);
     Serial.print("    MOSI = "); Serial.println(config.pinSpiMosi);
     Serial.print("    MISO = "); Serial.println(config.pinSpiMiso);
-    Serial.print("    SCK  = "); Serial.println(config.pinSPiSck);
+    Serial.print("    SCLK  = "); Serial.println(config.pinSpiSclk);
     
     Serial.println("UART with oXs uses:");
     Serial.print("    GPIO_RX = "); Serial.println(config.pinSerialRx);
@@ -509,7 +551,7 @@ void setupConfig(){   // The config is uploaded at power on
         config.pinSpiCs = SPI_CS;
         config.pinSpiMiso = SPI_RX;
         config.pinSpiMosi = SPI_TX;
-        config.pinSPiSck = SPI_SCK; 
+        config.pinSpiSclk = SPI_SCLK; 
         config.pinSerialRx = SERIAL_IN_RX_GPIO;
         config.pinLed = 16;
         config.protocol = 'O' ; // O = oXs + csv
