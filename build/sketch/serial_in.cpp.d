@@ -123,4 +123,5 @@ c:\Data\oXs_logger_arduino\build\sketch\serial_in.cpp.o: \
  c:\users\acer\appdata\local\arduino15\packages\rp2040\hardware\rp2040\3.3.2\pico-sdk\src\rp2040\hardware_structs\include\hardware\structs\resets.h \
  c:\users\acer\appdata\local\arduino15\packages\rp2040\hardware\rp2040\3.3.2\pico-sdk\src\rp2040\hardware_regs\include\hardware\regs\resets.h \
  c:\Data\oXs_logger_arduino\build\sketch\ws2812.h \
- c:\Data\oXs_logger_arduino\build\sketch\oXs_logger.h
+ c:\Data\oXs_logger_arduino\build\sketch\oXs_logger.h \
+ c:\Data\oXs_logger_arduino\build\sketch\param.h

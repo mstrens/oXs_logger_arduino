@@ -17,7 +17,14 @@ struct CONFIG{
     uint8_t protocol = 'O' ; // O = oXs + csv
     uint32_t serialBaudrate = SERIAL_IN_BAUDRATE;
     uint8_t ledInverted;
-    bool fieldToAdd[64];
+    bool fieldToAdd[64] = {FIELDS_TO_ADD}; //flag to say if the field must be part of CSV or not (init is done within setup of config)
+    uint8_t minField = MIN_FIELD;
+    int32_t minValue = MIN_VALUE;
+    uint8_t maxField = MAX_FIELD;
+    int32_t maxValue = MAX_VALUE;
+    uint8_t mode = MODE ;
+    uint16_t minInterval = MIN_INTERVAL_MS ; 
+    
 };
 
 void handleUSBCmd(void);

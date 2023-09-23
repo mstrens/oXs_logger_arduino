@@ -80,13 +80,28 @@ void printInstructions(){
     Serial.println("Commands can be entered to change the config parameters");
     Serial.println("- To select data to be part of log file, enter ADD = xx / yy");
     Serial.println("- To unselect data, enter DEL = xx / yy");
-    Serial.println("      where xx and yy are the index of the data as defined here");   
-    Serial.println("-To change (invert) led color, enter LED=N or LED=I");
-    Serial.println("-To change the baudrate, enter BAUD= XXXXXX  (with XXXXXX = the baudrate e.g. 15200)");
+    Serial.println("      where xx and yy are the index of the fields provided by oXs");   
+    Serial.println("- To change the minimum interval between 2 log entries, enter INTV=XXXX");
+    Serial.println("       XXXX is in msec and can be 0 (to get all log entries)");
+        
+    Serial.println("- To change the logging mode, enter MODE=C or MODE=T or MODE=F");
+    Serial.println("      C (continuous = log always), T (Triggered = start when MIN & MAX match) , F (Filtered = log when MIN & MAX match)");
+    Serial.println("- To change the MIN, enter MINF=XX (for the field index) and enter MINV=YYYYY (for the value)");
+    Serial.println("- To change the MAX, enter MAXF=XX (for the field index) and enter MINV=YYYYY (for the value)");
+    
+    Serial.println("- To change (invert) led color, enter LED=N or LED=I");
+    Serial.println("- To change the gpio that get the data from oXs, enter DATA= XX  (with XX = 5, 9, 21, 25)");
+    Serial.println("- To change the baudrate, enter BAUD= XXXXXX  (with XXXXXX = the baudrate e.g. 15200)");
+    
+    Serial.println("- To change the SD MOSI gpio, enter MOSI= XX  (with XX = 3, 7, 19, 23)");
+    Serial.println("- To change the SD MISO gpio, enter MISO= XX  (with XX = 0, 4, 16, 20)");
+    Serial.println("- To change the SD SCLK gpio, enter SCLK= XX  (with XX = 2, 6, 18, 22)");
+    Serial.println("- To change the SD CS   gpio, enter CS= XX    (with XX in range 0...29)");
+    
     Serial.println(" ");
     Serial.println("   Note: some changes require a manual reset to be applied");
     Serial.println(" ");
-    Serial.println("- To get the content of currentt csv file, enter PF (it means Print File)");
+    Serial.println("- To get the content of current csv file, enter PF (PF means Print File)");
     Serial.println(" ");
     Serial.println("-To get the current config, just press Enter");
     
@@ -99,7 +114,7 @@ void updateFromToConfig(uint8_t fromValue, uint8_t toValue, bool flag){  // the 
     //Serial.print("From = "); Serial.print(fromValue); Serial.print("   To=");Serial.println(toValue); 
     if ((fromValue >= sizeof(config.fieldToAdd)) || (toValue >= sizeof(config.fieldToAdd) ) ) {
         Serial.println("Error : from or to in range of fields to be part of csv exceeds 64");
-        return;
+        return; 
     }
     for (uint8_t i=fromValue ; i <= toValue; i++){
         config.fieldToAdd[i]= flag;
@@ -121,7 +136,8 @@ void processCmd(){  // process the command entered via usb; called when a full c
     //Serial.println("processing cmd");
     bool updateConfig = false;      // after some cheks, says if we can save the config
     char *ptr;
-    uint32_t ui;
+    uint32_t ui;   // temporary value to get an uint32_t
+    int32_t  iTemp; //temporary value to get an int32_t
     pkey = NULL;   // point the first char of the key
     pvalue = NULL; // point the first char of the value (= from in case of a range)  
     ptoValue = NULL;    // point to the first char of the to in case of a range
@@ -153,6 +169,7 @@ void processCmd(){  // process the command entered via usb; called when a full c
     if (pkey) {Serial.print(" "); Serial.print(pkey);}
     if (pvalue) {Serial.print(" = ");Serial.print(pvalue);}
     Serial.println(" ");
+    bool wrongCmd = true;  // used to detect invalid command
     
     // change fields to add in the csv
     if ( strcmp("ADD", pkey) == 0 ) { 
@@ -293,8 +310,22 @@ void processCmd(){  // process the command entered via usb; called when a full c
         } else if (ui>29) {   
             Serial.println("Error : CS GPIO must be in range 0...29");
         } else {    
-            config.pinSpiSclk = ui;
-            Serial.print("GPIO for SCLK = ");Serial.println(config.pinSpiSclk);
+            config.pinSpiCs = ui;
+            Serial.print("GPIO for CS = ");Serial.println(config.pinSpiCs);
+            updateConfig = true;
+        }
+    }
+    
+    // change DATA_IN pin (used by Serial2 = UART1 to get data from oXs)
+    if ( strcmp("DATA", pkey) == 0 ) { 
+        ui = strtoul(pvalue, &ptr, 10);
+        if ( *ptr != 0x0){
+            Serial.println("Error : GPIO must be an unsigned integer\n");
+        } else if ( !(ui!=2 or ui!=6 or ui!=18 or ui!=22)) {   //2 6 18 22
+            Serial.println("Error : DATA in GPIO must be 5, 9, 21 or 25\n"); // 5, 9, 21, 25
+        } else {    
+            config.pinSerialRx = ui;
+            Serial.print("GPIO for DATA = ");Serial.println(config.pinSerialRx);
             updateConfig = true;
         }
     }
@@ -365,12 +396,101 @@ void processCmd(){  // process the command entered via usb; called when a full c
         }
     }
     
+    // change INTV (minimum interval between 2 log csv)
+    if ( strcmp("INTV", pkey) == 0 ) { 
+        ui = strtoul(pvalue, &ptr, 10);
+        if ( *ptr != 0x0){
+            Serial.println("Error : minimum onterval must be an unsigned integer");
+        } else {
+            config.minInterval = ui;
+            Serial.print("minimum interval between 2 log = "); Serial.println(config.minInterval);
+            updateConfig = true;
+        }
+    }
+    
+    
+    // change mode (C = continous=0 , T = triggered = 1, F = filtered =2)
+    if ( strcmp("MODE", pkey) == 0 ) { // 
+        if (strcmp("C", pvalue) == 0) {
+            config.mode = '0';
+            updateConfig = true;
+        } else if (strcmp("T", pvalue) == 0) { 
+            config.mode = '1';
+            updateConfig = true;
+        } else if (strcmp("F", pvalue) == 0) { 
+            config.mode = '2';
+            updateConfig = true;
+        } else  {
+            Serial.println("Error : mode must be C (continous), T (triggered) or F (filtered)");
+        }
+    }
+    
+    // change MINF
+    if ( strcmp("MINF", pkey) == 0 ) { 
+        ui = strtoul(pvalue, &ptr, 10);
+        if ( *ptr != 0x0){
+            Serial.println("Error : field index must be an unsigned integer\n");
+        } else if ( !(ui < 64)) {   //2 6 18 22
+            Serial.println("Error : field index must be in range 0...63\n"); 
+        } else {    
+            config.minField = ui;
+            Serial.print("Field index for min value = ");Serial.println(config.minField);
+            updateConfig = true;
+        }
+    }
+    
+    // change MINV
+    if ( strcmp("MINV", pkey) == 0 ) { 
+        iTemp = strtol(pvalue, &ptr, 10);
+        if ( *ptr != 0x0){
+            Serial.println("Error : field value must be an integer\n");
+        } else {    
+            config.minValue = iTemp;
+            Serial.print("Min value = ");Serial.println(config.minValue);
+            updateConfig = true;
+        }
+    }
+    
+    // change MAXF
+    if ( strcmp("MAXF", pkey) == 0 ) { 
+        ui = strtoul(pvalue, &ptr, 10);
+        if ( *ptr != 0x0){
+            Serial.println("Error : field index must be an unsigned integer\n");
+        } else if ( !(ui < 64)) {   //2 6 18 22
+            Serial.println("Error : field index must be in range 0...63\n"); 
+        } else {    
+            config.maxField = ui;
+            Serial.print("Field index for max value = ");Serial.println(config.maxField);
+            updateConfig = true;
+        }
+    }
+    
+    // change MAXV
+    if ( strcmp("MAXV", pkey) == 0 ) { 
+        iTemp = strtol(pvalue, &ptr, 10);
+        if ( *ptr != 0x0){
+            Serial.println("Error : field value must be an integer\n");
+        } else {    
+            config.maxValue = iTemp;
+            Serial.print("min value = ");Serial.println(config.maxValue);
+            updateConfig = true;
+        }
+    }
+    
+
+
+    // after this line, put commands that does nor require to update the config; set also wrongCmd = false
     // print content of current csv file
     if ( strcmp("PF", pkey) == 0 ) {
         Serial.println("printing CSV content");
-        readCsvFile(); 
+        readCsvFile();
+        wrongCmd = false;  
     }
     
+    if ( (updateConfig == false) && (wrongCmd == true) ) {
+        Serial.println ("Wrong command: command is discarded");
+    }
+
     if (updateConfig) {
         saveConfig();
         Serial.println("config has been saved");  
@@ -420,6 +540,23 @@ void checkConfig(){     // set configIsValid
             pinIsduplicated= true;
         }          
     }
+
+    if ((config.mode ==1) || (config.mode==2)){
+      if ((config.minField ==255 ) && (config.maxField ==255 )) {
+        Serial.print("Error in parameters: when mode T or F, at least MINF or MAXF must be defined"); 
+        configIsValid=false;    
+      }
+      if ((config.minField > 63 ) && (config.minField !=255 )) {
+        Serial.print("Error in parameters: field index for MIN (MINF) must be < 63 or =255"); 
+        configIsValid=false;    
+      }  
+      if ((config.maxField > 63 ) && (config.maxField !=255 )) {
+        Serial.print("Error in parameters: field index for MAX (MAXF) must be < 63 or =255"); 
+        configIsValid=false;    
+      }  
+      
+    } 
+    
     /*
     if ( (config.pinSda != 255 and config.pinScl==255) or
          (config.pinScl != 255 and config.pinSda==255) ) {
@@ -445,6 +582,22 @@ void printConfig(){
     isPrinting = true;
     char version[] =   VERSION ;
     Serial.print("\nVersion = "); Serial.println(version);
+    
+    Serial.println("Fields in CSV log (+ = included; - = not included)");
+    for (uint8_t i=0; i<63; i++){
+        Serial.print("  "); 
+        if (config.fieldToAdd[i]) Serial.print(" + ") ;else Serial.print(" - ");
+         Serial.print(i); Serial.print(" ");
+        Serial.println(listOfCsvFieldName[i]); 
+    }
+    
+    Serial.print("Minimum interval betwwen 2 log entries = ");Serial.print(config.minInterval);Serial.println(" ms");
+    if ( (config.mode==0) || (config.mode==255) ) Serial.println("Log mode is Continous (log always, MIN/MAX are discarded)");
+    if (config.mode==1) Serial.println("Log mode is Triggered (log starts when MIN & MAX match)");
+    if (config.mode==2) Serial.println("Log mode is Filtered (log occurs when MIN & MAX match)");
+    Serial.print("MIN : to log, value of field index "); Serial.print(config.minField); Serial.print(" must be more than "); Serial.println(config.minValue);  
+    Serial.print("MAX : to log, value of field index "); Serial.print(config.maxField); Serial.print(" must be less than "); Serial.println(config.maxValue);  
+
     Serial.println("GPIO's used by sd card are:");
     Serial.print("    CS   = "); Serial.println(config.pinSpiCs);
     Serial.print("    MOSI = "); Serial.println(config.pinSpiMosi);
@@ -452,7 +605,7 @@ void printConfig(){
     Serial.print("    SCLK  = "); Serial.println(config.pinSpiSclk);
     
     Serial.println("UART with oXs uses:");
-    Serial.print("    GPIO_RX = "); Serial.println(config.pinSerialRx);
+    Serial.print("    gpio to receive data from oXs = "); Serial.println(config.pinSerialRx);
     Serial.print("    Baudrate = "); Serial.println(config.serialBaudrate);
 
     if (config.protocol == 'O'){
@@ -465,12 +618,6 @@ void printConfig(){
         Serial.println("Led color is inverted")  ;
     } else {
         Serial.println("Led color is normal (not inverted)")  ;
-    }
-    Serial.println("Fields in CSV log (+ = included; - = not included)");
-    for (uint8_t i=0; i<63; i++){
-        Serial.print("   "); Serial.print(i); 
-        if (config.fieldToAdd[i]) Serial.print(" + ") ;else Serial.print(" - ");
-        Serial.println(listOfCsvFieldName[i]); 
     }
     
     watchdog_update(); //sleep_ms(500);
@@ -546,7 +693,8 @@ void setupConfig(){   // The config is uploaded at power on
         memcpy( &config , flash_target_contents, sizeof(config));
     } else {
         config.version = CONFIG_VERSION;
-        for (uint8_t i=0 ; i<64 ; i++) { config.fieldToAdd[i] = true; }
+        bool fieldToAddTemp[64] = { FIELDS_TO_ADD };
+        for (uint8_t i=0 ; i<64 ; i++) { config.fieldToAdd[i] = fieldToAddTemp[i]; }
         config.pinSpiCs = SPI_CS;
         config.pinSpiMiso = SPI_RX;
         config.pinSpiMosi = SPI_TX;

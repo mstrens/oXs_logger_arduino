@@ -20,13 +20,13 @@ extern uint8_t createDateTimeState; // flag to know if the file creation date an
 
 //  Change the value of SD_CS_PIN if you are using SPI and
 // SDCARD_SS_PIN is defined for the built-in SD on some boards.
-#ifndef SDCARD_SS_PIN
-const uint8_t SD_CS_PIN = SPI_CS;
-#else   // SDCARD_SS_PIN
-// Assume built-in SD is used.
-const uint8_t SD_CS_PIN = SPI_CS;
-#endif  // SDCARD_SS_PIN
-
+//#ifndef SDCARD_SS_PIN
+//const uint8_t SD_CS_PIN = SPI_CS;
+//#else   // SDCARD_SS_PIN
+//// Assume built-in SD is used.
+//const uint8_t SD_CS_PIN = SPI_CS;
+//#endif  // SDCARD_SS_PIN
+uint8_t SD_CS_PIN ;
 
 // This example was designed for exFAT but will support FAT16/FAT32.
 // Note: Uno will not support SD_FAT_TYPE = 3.
@@ -71,6 +71,38 @@ file_t csvFileToRead;
 // You may modify the filename.  Digits before the dot are file versions.
 char csvName[] = "oXsLog000.csv";
 uint8_t csvFileError = 255;
+
+// Modify these functions for your port expander or custom GPIO library.
+void sdCsInit(SdCsPin_t pin) {
+  //Serial.print("cs pin") ; Serial.println(pin);
+  //initCalls++;
+  pinMode(pin, OUTPUT);
+}
+void sdCsWrite(SdCsPin_t pin, bool level) {
+  //writeCalls++;
+  gpio_put ((uint) pin, level);
+  //digitalWrite(pin, level);
+}
+
+uint setupSdCard(){
+    delay(1000);
+    SPI.setRX(config.pinSpiMiso);
+    SPI.setSCK(config.pinSpiSclk);
+    SPI.setTX(config.pinSpiMosi);
+    // CS can use any pin and is defined in sd.begin
+    // Initialize SD.
+    if (!sd.begin(  SdSpiConfig(config.pinSpiCs, DEDICATED_SPI, SD_SCK_MHZ(20)))) {
+        Serial.println("error in sd.begin");
+        //sd.initErrorHalt(&Serial);
+        return 1;
+    }
+    //Serial.println("Sd begin is done");
+    //Serial.println("trying to create csv");
+
+    return createcsvFile(); // this function return 0 when there are no error
+    //Serial.println("End of setup SD card");
+}
+
 
 void readCsvFile(){
     Serial.println("trying to read the csv");
@@ -223,28 +255,9 @@ void logOnSD(uint32_t writeIdx , uint16_t len){    // return the time in usec
     if ( createDateTimeState == 1){ // 1 means that date/time is known but not yet registered on SD (2 = registered)  
         csvFile.timestamp(T_CREATE, (uint16_t) 2000+ (firstGpsDate>>24), (uint8_t) (firstGpsDate>>16), (uint8_t) (firstGpsDate>>8),\
             (uint8_t) (firstGpsTime>>24), (uint8_t) (firstGpsTime>>16), (uint8_t) (firstGpsTime>>8) );
-            
+        createDateTimeState = 2; // avoid to update the creation timestamp twice    
     }    
 }
 
 
-uint setupSdCard(){
-    delay(1000);
-    SPI.setRX(config.pinSpiMiso);
-    SPI.setCS(config.pinSpiCs);
-    SPI.setSCK(config.pinSpiSclk);
-    SPI.setTX(config.pinSpiMosi);
-
-    // Initialize SD.
-    if (!sd.begin(SD_CONFIG)) {
-        Serial.println("error in sd.begin");
-        //sd.initErrorHalt(&Serial);
-        return 1;
-    }
-    
-    //Serial.println("trying to create csv");
-
-    return createcsvFile();
-    //Serial.println("End of setup SD card");
-}
 

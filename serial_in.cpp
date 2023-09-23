@@ -23,6 +23,7 @@
 #include "ws2812.h"
 
 #include "oXs_logger.h"
+#include "param.h"
 
 #include <charconv>
 #include <stdio.h>
@@ -64,7 +65,6 @@ TLM tempTlm[64]; // tempory structure to keep type and data waiting for next 0X7
 uint8_t tempTlmCount = 0;  // number of data to push to next step
 int currentTlm[64] = {0} ;  // current telemetry data (updated with last received data's and transmitted in csv format)
 uint8_t tlmFormat[64]= LIST_OF_DECIMALS; // number of decimal per fields ;  0..3 number of décimals, 6 = GPS format (we first have to divide by 10 because original value has 7 digits)
-bool fieldToAdd[64] ; // flag to say if the field must be part of CSV or not (init is done within setup of config)
 
 uint32_t maxSerialAvailable;    // max number of bytes in Serial2 fifo (to compare with SERIAL_IN_FIFO_LEN)
 uint32_t maxBytesInBuf = 0;     // max number of bytes in csvBuff (to compare with CSV_MAX_BUFFER_LEN)
@@ -77,12 +77,15 @@ uint32_t maxTimeBetween2HandleSerialInMs = 0;
 extern uint maxWriteOnSdUs;        // max time to write one rec on sdcard    
 extern uint32_t maxSyncOnSdUs;
 
+extern CONFIG config;
 extern uint8_t ledState; 
 
 uint32_t firstGpsDate; // store the first GPS date (to avoid race issue)
 uint32_t firstGpsTime; // idem for time
 uint8_t createDateTimeState = 0; // flag to know if the file creation date and time is already registered
                                  // 0 = date/time unknown, 1 date/time known but not yet registered on SD ,2 = registered  
+
+uint32_t lastCsvWritteMs = 0 ; // used to check that we have the minimum interval between 2 csv log entries
 
 void reportStats(uint interval){
     static uint prevReportMs = 0;
@@ -94,12 +97,12 @@ void reportStats(uint interval){
         Serial.print("max % of bytes in csvbuf= "); Serial.println((maxBytesInBuf * 100) / CSV_MAX_BUFFER_LEN);
         Serial.print("max us to fill csv rec= ") ; Serial.println(maxFillCsvUs);
         Serial.print("max % used of fromNbr queue= "); Serial.println((maxFromNbrQueueLevel * 100) /WRITE_FROM_NBR_QUEUE_LEN);
-        Serial.print("max % used of lastWritten queued= "); Serial.println((maxLastWrittenQueueLevel * 100) /LAST_WRITTEN_QUEUE_LEN);
+        Serial.print("max % used of lastWritten queue= "); Serial.println((maxLastWrittenQueueLevel * 100) /LAST_WRITTEN_QUEUE_LEN);
         Serial.print("max us to write on sd card= "); Serial.println(maxWriteOnSdUs);
         Serial.print("max us to synchro on sd card= "); Serial.println(maxSyncOnSdUs);
         
         Serial.print(" total bytes written in csv file= "); Serial.println(totalNbBytesInCsvFile);
-
+        maxTimeBetween2HandleSerialInMs = 0;
         maxSerialAvailable = 0;    // max number of bytes in Serial2 fifo (to compare with SERIAL_IN_FIFO_LEN)
         maxBytesInBuf = 0;     // max number of bytes in csvBuff (to compare with CSV_MAX_BUFFER_LEN)
         maxFromNbrQueueLevel= 0;   // max level reached (to compare with WRITE_FROM_NBR_QUEUE_LEN)
@@ -196,12 +199,12 @@ void handleSerialIn(){
     static int inCount = 0;
     //static uint32_t lastTestMicros = 0;
     static bool stuffing = false;
-    static uint32_t inTime = 0;
-    static uint8_t inType = 0;
-    static uint8_t inNb0Byte = 0;
-    static uint32_t inData = 0; 
-    static uint32_t lastSerialInMs = 0;   // use to detect when we do not get valid data anymore
-    static uint32_t lastCallToHandleSerialInMs = 0;
+    static uint32_t inTime = 0;   // timestamp received in the serial flow
+    static uint8_t inType = 0;    // type of data (index) 
+    static uint8_t inNb0Byte = 0; // number of leading zero to add (where in 2 MSB with type)
+    static uint32_t inData = 0;   // value of a field 
+    static uint32_t lastValidDataMs = 0;   // use to detect when we do not get valid data anymore
+    static uint32_t lastCallToHandleSerialInMs = 0;  // used to measure the max delay between 2 call to this function
     
     uint8_t c;                     // char to read from uart2
     uint32_t serialAvailable = 0;  // number of char available
@@ -211,9 +214,10 @@ void handleSerialIn(){
         maxTimeBetween2HandleSerialInMs = now - lastCallToHandleSerialInMs; 
     }
     lastCallToHandleSerialInMs = now; 
-    if ((millis() - lastSerialInMs) > 5000){  // check that we got at least some valid data within 5 sec
-        Serial.print("No data within "); Serial.println(millis() - lastSerialInMs);
+    if ((now - lastValidDataMs) > 5000){  // check that we got at least some valid data within 5 sec
+        Serial.print("No data within "); Serial.println(now - lastValidDataMs);
         ledState = STATE_NO_DATA;             // when no data, we will change the led color
+        lastValidDataMs = now; // avoid to repeat to often the message
     }
     while (Serial2.available() ){
         serialAvailable = Serial2.available();
@@ -224,27 +228,31 @@ void handleSerialIn(){
             // when a synchr is received after a previous valid record, then process previous group of data
             if ((tempTlmCount > 0 ) && (inState==IN_RECEIVING_TYPE)){
                 
-                lastSerialInMs = millis(); // reset the value to check that we got a valid packet
-                // update the data in the cumulatieve table (one column for each data)
+                lastValidDataMs = millis(); // reset the value used to check that we got a valid packet
+                // update the data in the cumulatieve table of 64 data (one column for each data)
                 currentTlm[0X3F] = inTime;     // update the timestamp at idx 0X3F
                 for (uint8_t i=0; i<tempTlmCount; i++ ){  // update current tlm based on incoming data in 
                     uint8_t j = tempTlm[i].type;
                     if (j< 63) { 
                         currentTlm[j] = tempTlm[i].data;
                     }
-                    
                 }
                 // detect when we get for the first time a GPS date and time
                 if ( createDateTimeState == 0){
                     if (currentTlm[6] && currentTlm[7]) {
                         firstGpsDate = currentTlm[6]; // store the 2 value (to avoid race issue)
                         firstGpsTime = currentTlm[7];
-                        createDateTimeState = 1;    // update the state to KNOWN but not registered
+                        createDateTimeState = 1;    // update the state to KNOWN but not registered; registration is done in sd.cpp
                     }
                 }
-                // convert current table into a csv record that is filled in a long buffer.
-                // when no enogh free space, wait to write in the buffer
-                fillCsvBuffer();
+                // convert current table into a csv record that is filled in a long circular buffer.
+                // when no enough free space, wait to write in the buffer
+                if ( (millis() - lastCsvWritteMs) >= config.minInterval){ //  wait the minimum required time between 2 log
+                    if (csvToLog()) {      // check if a csv may be written based on mode and MIN/MAX
+                        fillCsvBuffer();
+                        lastCsvWritteMs = millis(); 
+                    }    
+                }
             }; 
             inState=IN_RECEIVING_TIME;
             stuffing = false;
@@ -343,9 +351,9 @@ struct repeating_timer timer;
 void setupTest(){ //test data are generated on uart0 (= SERIAL1 on arduino)
     Serial1.setTX(SERIAL1_TX_PIN); // 0, 12, 16, 28
     Serial1.begin(SERIAL_IN_BAUDRATE);
-    for (uint8_t i=0; i<63 ; i++){
-        fieldToAdd[i]= true;
-    }
+    //for (uint8_t i=0; i<63 ; i++){
+    //    config.fieldToAdd[i]= true;
+    //}
     add_repeating_timer_us(TEST_INTERVAL_US, sendTest_callback, NULL, &timer);
 }
 
@@ -468,6 +476,19 @@ bool sendTest_callback(struct repeating_timer *t) {
     return true; // repeat the timer
 }
 
+bool csvToLog(){ // return true when a csv may be logged (based on mode and MIN MAX parameters)
+    static bool logIsStarted = false; 
+    if ( (config.mode != 1 ) && (config.mode != 2 )) return true;
+    if (logIsStarted) return true;
+    if ( (config.minField < 64) && ( currentTlm[config.minField] <= config.minValue )) return false; 
+    if ( (config.maxField < 64) && ( currentTlm[config.maxField] >= config.maxValue )) return false; 
+    if (config.mode == 1 ) logIsStarted = true;
+    return true; 
+}
+
+
+
+
 // convert a table with 64 int32 data into csv (decimals) 
 // we fill the data in a circular buffer of m bytes
 // we keep a pointer where to wrire the next byte
@@ -503,7 +524,7 @@ void fillCsvBuffer(){    // wait for enough free space, then write a csv record 
     static bool warningCsvFull = true; // used to send only once the message that CSV is full
     static bool warningNoSpaceBeforeReadIdx = true;
     while (true){
-        if (bytesInBuf ){
+        if (bytesInBuf ){        
             updateBytesInBuf() ; // check if Sd card has writen some bytes in order to make space
         }
         if (bytesInBuf < CSV_MAX_IN_BUFFER){ // buffer is not full
@@ -568,7 +589,7 @@ void writeRec(){    // convert currentTlm[] (with filtering) in a csv format wri
     writeIdx += toString(currentTlm[0X3F], 0 , &csvBuf[writeIdx]); // format the timestamp with n decimals in buffer at position writeIdx
     // write all other requested fields (special handling for GPS long/lat, GPS date, GPS time) 
     for (uint8_t i = 0; i<63; i++){ // for each field except the timestamp (stored at index 63)
-        if ((fieldToAdd[i]) && (i!=1)) {        // if the field has to be included and i!= 1 (because GPS long and lat are merged in one field)    
+        if ((config.fieldToAdd[i]) && (i!=1)) {        // if the field has to be included and i!= 1 (because GPS long and lat are merged in one field)    
             csvBuf[writeIdx++] = ',';  // put comma
             switch (i){
                 case 6:  // GPS date (must be in format 20YY:MM:DD)

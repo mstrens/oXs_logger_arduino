@@ -7,7 +7,7 @@ It uses his own RP2040 board and a SD card socket.
 \
 In the future:
 * optionally, a RTC (real time clock) module could be attached in order to know when the files have been created.
-* it should be possible to use it to record data provided by another device than oXs
+* it should be possible to use this firmware to record data provided by another device than oXs (so with no reformatting)
 
 
 \
@@ -20,6 +20,9 @@ In current version, the logger:
 * each "current" situation is then formatted in a CSV format and store on the SD card with the timestamp 
 * at regular interval (e.g. 10 sec), the logger synchronise the file on the Sd card in order to avoid loose of all data's on power down 
 * so, in case of power off, only the last seconds will be loosen
+
+Note: when oXs provide GPS date and time, the log file get a creation timestamp equal to the first date and time provided by oXs.
+There can be a delay because GPS has to get some satellites.
 ## -------  Hardware -----------------
 
 This project requires a board with a RP2040 processor like the rapsberry pi pico.
@@ -72,17 +75,18 @@ You can now use a serial terminal (like putty , the one from arduino IDE, the se
 * while the RP2040 is connected to the pc with the USB cable, connect this serial terminal to the serial port from the RP2040
 * when the RP2040 start (or pressing the reset button), press Enter to display the current configuration or ?+ENTER to display the commands to change the configuration.
 * if you want to change some parameters (mainly the list of fields to include in the CSV), fill in the command (code=value) and press the enter.
-* the RP2040 should then display the new (saved) config.  
+* the RP2040 should then display the new (saved) config.
+Note: do not forget to setup your serial monitor in such a way that it sent CR+LF (carriage return / line feed) each time you press enter.
 
 \
 \
 Developers can change the firmware with Arduino IDE (configured for RP2040 boards and sdfat lib).
 * Once the tools are installed, copy all files provided on github on you PC (keeping the same structure).  
-* Open VScode or Arduino and open the folder where you put the oXs logger files.
-* In VScode, press CTRL+SHIFT+P and in the input line that appears, enter (select) Arduino build  
+* Open VScode or Arduino IDE and open the folder where you put the oXs logger files.
+* In VScode, press CTRL+SHIFT+P and in the input line that appears, enter (select) Arduino : Upload  
 * This will create some files needed for the compilation and automatically upload the program.  
 
-Note :  the file logger_config.h contains some #define that can easily be changed to change some advanced parameters.
+Note :  the file logger_config.h contains some #define that can easily be edited to change some default/advanced parameters.
 
 ## --- Fields being logged ---
 
@@ -90,7 +94,7 @@ oXs can capture:
 * more than 30 different telemetry fields (number depends on the sensors being installed/configured)
 * 16 Rc channels values from one or two receivers.
 
-Those data can be transmitted to oXs_logger.
+Those data can be transmitted to oXs_logger (if a logger pin is defined in oXs).
 
 Each of those data's is identified by an index. You can define which data's are written on the SD card. To do so, enter commands in the serial terminal when the RP2040 is connected to the USB.
 
@@ -134,6 +138,17 @@ Here the index of all oXs data's
 * 37: Unused 37    &nbsp; &nbsp;    up to   &nbsp; &nbsp;   40: Unused 40
 * 41: Rc1          &nbsp; &nbsp;    &nbsp; &nbsp;    &nbsp; &nbsp;    &nbsp; &nbsp;    up to   &nbsp; &nbsp;   56: RC16
 * 57: Unused 57      &nbsp; &nbsp;  up to   &nbsp; &nbsp;   62: Unused 62
+
+
+oXs generates some data's at very short intervals. This can represent a huge amount of csv records. You can ask the logger to keep a minimum interval between 2 log enties in the csv file. The min interval is specified with the command INTV.
+
+It is also possible to select when oXs are logged or not. The MODE command let you select between 3 options:
+* C (continous) : oXs data's are recorded without taking care of the value of the data's
+* T (Triggered) : recording starts only after some oXs data's match some MIN and MAX values; once started, recording does not stop
+* F (Filtered)  : recording occurs only when some oXs data's match some MIN and MAX values
+
+For option T and F, you have to specify the field index and the value for respectively MIN and MAX.  
+
 
 ## ------------------ Led -------------------
 When a RP2040-Zero or RP2040-TINY is used, the firmware will handle a RGB led (internally connected to gpio16).

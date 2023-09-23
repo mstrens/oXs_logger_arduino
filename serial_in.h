@@ -8,6 +8,7 @@ void setupTest();
 bool sendTest_callback(struct repeating_timer *t);
 //void sendTest();
 
+bool csvToLog();   // return true when a csv may be written on sd (based on mode and MIN/MAX parameters)
 void fillCsvBuffer();
 void writeRec();
 void updateBytesInBuf();
