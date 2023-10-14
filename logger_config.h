@@ -1,6 +1,6 @@
 #pragma once
 
-#define VERSION "0.0.0"
+#define VERSION "0.0.1"
 
 //   -------------   Serial parameter to read data from oXs (use Serial2)
 #define SERIAL_IN_BAUDRATE 115200 // 230400      // 23000 bytes/sec
@@ -8,11 +8,18 @@
 #define SERIAL_IN_FIFO_LEN (1024*16)      // Size of uart fifo that receives data from oXs
 
 
-//----------------- for SD card we use first SPI with following GPIO ---------------
-#define SPI_RX   4  // MISO   0 4 16 20
-#define SPI_CS   2  // can  be a GPIO between 0 and 19
-#define SPI_SCLK  6  // Clock  2 6 18 22
-#define SPI_TX   7  // MOSI   3 7 19 23
+//----------------- for SD card we can use first or second SPI with following GPIO ---------------
+// for first SPI (SPI),  MISO must be  0 4 16 20 ; Clock  2 6 18 22 // MOSI   3 7 19 23
+// for second SPI (SPI1), MISO must be  8 12 24 28; Clock  10 14 26 // MOSI   11 15 27
+// note : the board Challenger with build in sdcard uses SPI1 and gpio Clock 10, Mosi 11 , miso 12 and Cs 9
+
+#define SPI_FOR_SD 0  // must be 0 (first spi = SPI) or 1 (second spi = SPI1)
+
+#define SPI_MISO   4  // MISO   0 4 16 20 (SPI)   or  8 12 24 28 (SPI1) 
+#define SPI_SCLK   6  // Clock  2 6 18 22 (SPI)   or  10 14 26   (SPI1) 
+#define SPI_MOSI   7  // MOSI   3 7 19 23 (SPI)   or  11 15 27   (SPI1)
+
+#define SPI_CS   2  // can  be a GPIO between 0 and 29
 
 //----------------- oXs fields to include in the CSV log file ----------------------
 // list of 64 X true (insert) or false (omit); one for each field in sequence of index (see list of index below)

@@ -260,16 +260,30 @@ void processCmd(){  // process the command entered via usb; called when a full c
         }
     }
     
+    // change SPI used for SD card
+    if ( strcmp("SD", pkey) == 0 ) { 
+        ui = strtoul(pvalue, &ptr, 10);
+        if ( *ptr != 0x0){
+            Serial.println("Error : spi used for SD card must be an unsigned integer\n");
+        } else if ( !(ui!=0 or ui!=1)) {   
+            Serial.println("Error : spi used for sd card must be 0 (SPI) or 1 (SPI1)\n");
+        } else {    
+            config.spiForSd = ui;
+            Serial.print("Spi for sd card = ");Serial.println(config.spiForSd);
+            updateConfig = true;
+        }
+    }
+    
     // change MISO pin
     if ( strcmp("MISO", pkey) == 0 ) { 
         ui = strtoul(pvalue, &ptr, 10);
         if ( *ptr != 0x0){
-            Serial.println("Error : GPIO must be an unsigned integer\n");
-        } else if ( !(ui!=0 or ui!=4 or ui!=16 or ui!=20)) {   //0 4 16 20
-            Serial.println("Error : MISO GPIO must be 0, 4, 16 or 20\n");
+            Serial.println("Error : gpio must be an unsigned integer\n");
+        } else if ( !(ui!=0 or ui!=4 or ui!=16 or ui!=20 or ui!=8 or ui!=12 or ui!=24 or ui!=28)) {   //0 4 16 20
+            Serial.println("Error : MISO gpio must be 0, 4, 16, 20 (for SPI) or 8, 12, 24, 28 (for SPI1)\n");
         } else {    
             config.pinSpiMiso = ui;
-            Serial.print("GPIO for MISO = ");Serial.println(config.pinSpiMiso);
+            Serial.print("Gpio for MISO = ");Serial.println(config.pinSpiMiso);
             updateConfig = true;
         }
     }
@@ -278,12 +292,12 @@ void processCmd(){  // process the command entered via usb; called when a full c
     if ( strcmp("MOSI", pkey) == 0 ) { 
         ui = strtoul(pvalue, &ptr, 10);
         if ( *ptr != 0x0){
-            Serial.println("Error : GPIO must be an unsigned integer\n");
-        } else if ( !(ui!=3 or ui!=7 or ui!=19 or ui!=23)) {   //3 7 19 23
-            Serial.println("Error : MOSI GPIO must be 3, 7, 19 or 23\n");
+            Serial.println("Error : gpio must be an unsigned integer\n");
+        } else if ( !(ui!=3 or ui!=7 or ui!=19 or ui!=23 or ui!=11 or ui!=15 or ui!=27)) { 
+            Serial.println("Error : MOSI gpio must be 3, 7, 19, 23 (for SPI) or 11, 15, 27(for SPI1)\n");
         } else {    
             config.pinSpiMosi = ui;
-            Serial.print("GPIO for MOSI = ");Serial.println(config.pinSpiMosi);
+            Serial.print("Gpio for MOSI = ");Serial.println(config.pinSpiMosi);
             updateConfig = true;
         }
     }
@@ -292,12 +306,12 @@ void processCmd(){  // process the command entered via usb; called when a full c
     if ( strcmp("SCLK", pkey) == 0 ) { 
         ui = strtoul(pvalue, &ptr, 10);
         if ( *ptr != 0x0){
-            Serial.println("Error : GPIO must be an unsigned integer\n");
-        } else if ( !(ui!=2 or ui!=6 or ui!=18 or ui!=22)) {   //2 6 18 22
-            Serial.println("Error : SCLK GPIO must be 2, 6, 18 or 22\n");
+            Serial.println("Error : gpio must be an unsigned integer\n");
+        } else if ( !(ui!=2 or ui!=6 or ui!=18 or ui!=22 or ui!=10 or ui!=14 or ui!=26)) {   
+            Serial.println("Error : SCLK gpio must be 2, 6, 18, 22 (for SPI) or 10, 14, 26 (for SPI1)\n");
         } else {    
             config.pinSpiSclk = ui;
-            Serial.print("GPIO for SCLK = ");Serial.println(config.pinSpiSclk);
+            Serial.print("Gpio for SCLK = ");Serial.println(config.pinSpiSclk);
             updateConfig = true;
         }
     }
@@ -541,22 +555,48 @@ void checkConfig(){     // set configIsValid
         }          
     }
 
+    if (config.spiForSd == 0 and (config.pinSpiMiso !=0 and config.pinSpiMiso !=4 and config.pinSpiMiso !=16 and config.pinSpiMiso !=20) ){
+        Serial.println("Error : when spi for sd = 0 (SPI), MISO gpio must be 0, 4, 16 or 20"); 
+        configIsValid=false;
+    }
+    if (config.spiForSd == 1 and (config.pinSpiMiso !=8 and config.pinSpiMiso !=12 and config.pinSpiMiso !=24 and config.pinSpiMiso !=28) ){
+        Serial.println("Error : when spi for sd = 1 (SPI1), MISO gpio must be 8, 12, 24 or 28");
+        configIsValid=false; 
+    }
+    if (config.spiForSd == 0 and (config.pinSpiMosi !=3 and config.pinSpiMosi !=7 and config.pinSpiMosi !=19 and config.pinSpiMosi !=23) ){
+        Serial.println("Error : when spi for sd = 0 (SPI), MOSI gpio must be 3, 7, 19 or 23"); 
+        configIsValid=false;
+    }
+    if (config.spiForSd == 1 and (config.pinSpiMosi !=11 and config.pinSpiMosi !=15 and config.pinSpiMosi !=27) ){
+        Serial.println("Error : when spi for sd = 1 (SPI1), MOSI gpio must be 11, 15 or 27");
+        configIsValid=false; 
+    }
+    if (config.spiForSd == 0 and (config.pinSpiSclk !=2 and config.pinSpiSclk !=6 and config.pinSpiSclk !=18 and config.pinSpiSclk !=22) ){
+        Serial.println("Error : when spi for sd = 0 (SPI), SCLK gpio must be 2, 6, 18 or 22"); 
+        configIsValid=false;
+    }
+    if (config.spiForSd == 1 and (config.pinSpiSclk !=10 and config.pinSpiSclk !=14 and config.pinSpiSclk !=26) ){
+        Serial.println("Error : when spi for sd = 1 (SPI1), SCLK gpio must be 10, 14 or 26");
+        configIsValid=false; 
+    }
+  
     if ((config.mode ==1) || (config.mode==2)){
       if ((config.minField ==255 ) && (config.maxField ==255 )) {
-        Serial.print("Error in parameters: when mode T or F, at least MINF or MAXF must be defined"); 
+        Serial.println("Error in parameters: when mode T or F, at least MINF or MAXF must be defined"); 
         configIsValid=false;    
       }
       if ((config.minField > 63 ) && (config.minField !=255 )) {
-        Serial.print("Error in parameters: field index for MIN (MINF) must be < 63 or =255"); 
+        Serial.println("Error in parameters: field index for MIN (MINF) must be < 63 or =255"); 
         configIsValid=false;    
       }  
       if ((config.maxField > 63 ) && (config.maxField !=255 )) {
-        Serial.print("Error in parameters: field index for MAX (MAXF) must be < 63 or =255"); 
+        Serial.println("Error in parameters: field index for MAX (MAXF) must be < 63 or =255"); 
         configIsValid=false;    
       }  
       
     } 
     
+
     /*
     if ( (config.pinSda != 255 and config.pinScl==255) or
          (config.pinScl != 255 and config.pinSda==255) ) {
@@ -695,9 +735,10 @@ void setupConfig(){   // The config is uploaded at power on
         config.version = CONFIG_VERSION;
         bool fieldToAddTemp[64] = { FIELDS_TO_ADD };
         for (uint8_t i=0 ; i<64 ; i++) { config.fieldToAdd[i] = fieldToAddTemp[i]; }
+        config.spiForSd = SPI_FOR_SD;
         config.pinSpiCs = SPI_CS;
-        config.pinSpiMiso = SPI_RX;
-        config.pinSpiMosi = SPI_TX;
+        config.pinSpiMiso = SPI_MISO;
+        config.pinSpiMosi = SPI_MOSI;
         config.pinSpiSclk = SPI_SCLK; 
         config.pinSerialRx = SERIAL_IN_RX_GPIO;
         config.pinLed = 16;

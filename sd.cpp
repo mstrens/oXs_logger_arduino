@@ -90,7 +90,7 @@ uint setupSdCard(){
     SPI.setTX(config.pinSpiMosi);
     // CS can use any pin and is defined in sd.begin
     // Initialize SD.
-    if (!sd.begin(  SdSpiConfig(config.pinSpiCs, DEDICATED_SPI, SD_SCK_MHZ(20)))) {
+    if (!sd.begin(  SdSpiConfig(config.pinSpiCs, DEDICATED_SPI, SD_SCK_MHZ(20),&SPI))) {
         Serial.println("error in sd.begin");
         //sd.initErrorHalt(&Serial);
         return 1;

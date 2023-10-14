@@ -5,12 +5,13 @@
 #include "logger_config.h"
 //#include "crsf_frames.h"
 
-#define CONFIG_VERSION 6
+#define CONFIG_VERSION 7
 struct CONFIG{
     uint8_t version = CONFIG_VERSION;
+    uint8_t spiForSd = SPI_FOR_SD ; 
     uint8_t pinSpiCs = SPI_CS;
-    uint8_t pinSpiMiso = SPI_RX;
-    uint8_t pinSpiMosi = SPI_TX;
+    uint8_t pinSpiMiso = SPI_MISO;
+    uint8_t pinSpiMosi = SPI_MOSI;
     uint8_t pinSpiSclk = SPI_SCLK; 
     uint8_t pinSerialRx = SERIAL_IN_RX_GPIO;
     uint8_t pinLed = 16;
