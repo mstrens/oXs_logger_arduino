@@ -1,6 +1,6 @@
 #pragma once
 
-#define VERSION "0.0.1"
+#define VERSION "0.0.2"
 
 //   -------------   Serial parameter to read data from oXs (use Serial2)
 #define SERIAL_IN_BAUDRATE 115200 // 230400      // 23000 bytes/sec
