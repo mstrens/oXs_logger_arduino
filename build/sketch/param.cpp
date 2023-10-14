@@ -94,9 +94,9 @@ void printInstructions(){
     Serial.println("- To change the gpio that get the data from oXs, enter DATA= XX  (with XX = 5, 9, 21, 25)");
     Serial.println("- To change the baudrate, enter BAUD= XXXXXX  (with XXXXXX = the baudrate e.g. 15200)");
     Serial.println("- To change the SPI port being used for sd card, enter SD=0 (for SPI) or SPI=1 (for SPI1) ");
-    Serial.println("- To change the SD MOSI gpio, enter MOSI= XX  (with XX = 3, 7, 19, 23)");
-    Serial.println("- To change the SD MISO gpio, enter MISO= XX  (with XX = 0, 4, 16, 20)");
-    Serial.println("- To change the SD SCLK gpio, enter SCLK= XX  (with XX = 2, 6, 18, 22)");
+    Serial.println("- To change the SD MOSI gpio, enter MOSI= XX  (with XX = 3, 7, 19, 23 for SPI or 11, 15, 27 for SPI1)");
+    Serial.println("- To change the SD MISO gpio, enter MISO= XX  (with XX = 0, 4, 16, 20 for SPI or 8, 12, 24, 28 for SPI1)");
+    Serial.println("- To change the SD SCLK gpio, enter SCLK= XX  (with XX = 2, 6, 18, 22 for SPI or 10, 14, 26 for SPI1 )");
     Serial.println("- To change the SD CS   gpio, enter CS= XX    (with XX in range 0...29)");
     
     Serial.println(" ");
