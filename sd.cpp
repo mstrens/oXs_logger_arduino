@@ -83,6 +83,9 @@ void sdCsWrite(SdCsPin_t pin, bool level) {
   //digitalWrite(pin, level);
 }
 
+
+
+
 uint setupSdCard(){
     delay(1000);
     SPI.setRX(config.pinSpiMiso);
@@ -90,7 +93,7 @@ uint setupSdCard(){
     SPI.setTX(config.pinSpiMosi);
     // CS can use any pin and is defined in sd.begin
     // Initialize SD.
-    if (!sd.begin(  SdSpiConfig(config.pinSpiCs, DEDICATED_SPI, SD_SCK_MHZ(20),&SPI))) {
+    if (!sd.begin(  SdSpiConfig(config.pinSpiCs, DEDICATED_SPI, SD_SCK_MHZ(20),  config.spiForSd == 0 ? &SPI : &SPI1))) {
         Serial.println("error in sd.begin");
         //sd.initErrorHalt(&Serial);
         return 1;
