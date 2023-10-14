@@ -639,6 +639,7 @@ void printConfig(){
     Serial.print("MIN : to log, value of field index "); Serial.print(config.minField); Serial.print(" must be more than "); Serial.println(config.minValue);  
     Serial.print("MAX : to log, value of field index "); Serial.print(config.maxField); Serial.print(" must be less than "); Serial.println(config.maxValue);  
 
+    Serial.print("SD card use SPI"); Serial.print(config.spiForSd); Serial.println("    (0=SPI,  1=SPI1)");
     Serial.println("GPIO's used by sd card are:");
     Serial.print("    CS   = "); Serial.println(config.pinSpiCs);
     Serial.print("    MOSI = "); Serial.println(config.pinSpiMosi);
