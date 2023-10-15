@@ -81,28 +81,28 @@ void setup() {
     setupConfig(); // retrieve the config parameters (crsf baudrate, voltage scale & offset, type of gps, failsafe settings)  
     checkConfig();
     waitKeyPressed();
-    rp2040.fifo.push(1); // send a command to other core to allow SD to set up first 
+    if (configIsValid){
+        rp2040.fifo.push(1); // send a command to other core to allow SD to set up first 
 
-    //setRgbColorOn(0,0,10);  // switch to blue during the setup of different sensors/pio/uart
+        //setRgbColorOn(0,0,10);  // switch to blue during the setup of different sensors/pio/uart
 
-    //Serial.println("Waiting end of creating csv file by other core");
-    //uint32_t endOfSetupCore1;  // setup will return 0 if OK, 
-    if ( rp2040.fifo.pop() != 0){ // wait end of set up core and then in case of error set ledState
-        ledState = STATE_NO_SD;
-        handleLedState();
+        //Serial.println("Waiting end of creating csv file by other core");
+        //uint32_t endOfSetupCore1;  // setup will return 0 if OK, 
+        if ( rp2040.fifo.pop() != 0){ // wait end of set up core and then in case of error set ledState
+            ledState = STATE_NO_SD;
+            handleLedState();
+        }
+        Serial2.setRX(config.pinSerialRx);
+        Serial2.setFIFOSize((1024*16) /* Size of uart fifo that receives data from oXs*/);
+        Serial2.begin(config.serialBaudrate);
+
+        //Serial.println("End of setup on core0");
+        setupQueues();
+
+
+
+        //watchdog_enable(3500, 0); // require an update once every 3500 msec
     }
-
-
-    Serial2.setRX(config.pinSerialRx);
-    Serial2.setFIFOSize((1024*16) /* Size of uart fifo that receives data from oXs*/);
-    Serial2.begin(config.serialBaudrate);
-
-    //Serial.println("End of setup on core0");
-    setupQueues();
-
-
-
-    //watchdog_enable(3500, 0); // require an update once every 3500 msec
 }
 //------------------------------------------------------------------------------
 void loop() {

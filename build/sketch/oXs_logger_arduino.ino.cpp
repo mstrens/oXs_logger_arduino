@@ -97,28 +97,28 @@ void setup() {
     setupConfig(); // retrieve the config parameters (crsf baudrate, voltage scale & offset, type of gps, failsafe settings)  
     checkConfig();
     waitKeyPressed();
-    rp2040.fifo.push(1); // send a command to other core to allow SD to set up first 
+    if (configIsValid){ 
+        rp2040.fifo.push(1); // send a command to other core to allow SD to set up first 
 
-    //setRgbColorOn(0,0,10);  // switch to blue during the setup of different sensors/pio/uart
-    
-    //Serial.println("Waiting end of creating csv file by other core");
-    //uint32_t endOfSetupCore1;  // setup will return 0 if OK, 
-    if ( rp2040.fifo.pop() != 0){  // wait end of set up core and then in case of error set ledState
-        ledState = STATE_NO_SD;
-        handleLedState();
-    }    
-    
-
-    Serial2.setRX(config.pinSerialRx);
-    Serial2.setFIFOSize(SERIAL_IN_FIFO_LEN);
-    Serial2.begin(config.serialBaudrate);
-    
-    //Serial.println("End of setup on core0");
-    setupQueues();
-    #ifdef GENERATE_TEST_UART0_TX
-    setupTest();   // set up uart0 to generate uart data and start generating the data using a timer callback
-    #endif
-    //watchdog_enable(3500, 0); // require an update once every 3500 msec
+        //setRgbColorOn(0,0,10);  // switch to blue during the setup of different sensors/pio/uart
+        
+        //Serial.println("Waiting end of creating csv file by other core");
+        //uint32_t endOfSetupCore1;  // setup will return 0 if OK, 
+        if ( rp2040.fifo.pop() != 0){  // wait end of set up core and then in case of error set ledState
+            ledState = STATE_NO_SD;
+            handleLedState();
+        }    
+        Serial2.setRX(config.pinSerialRx);
+        Serial2.setFIFOSize(SERIAL_IN_FIFO_LEN);
+        Serial2.begin(config.serialBaudrate);
+        
+        //Serial.println("End of setup on core0");
+        setupQueues();
+        #ifdef GENERATE_TEST_UART0_TX
+        setupTest();   // set up uart0 to generate uart data and start generating the data using a timer callback
+        #endif
+        //watchdog_enable(3500, 0); // require an update once every 3500 msec
+    }
 }
 //------------------------------------------------------------------------------
 void loop() {

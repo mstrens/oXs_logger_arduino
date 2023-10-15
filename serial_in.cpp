@@ -480,6 +480,7 @@ bool csvToLog(){ // return true when a csv may be logged (based on mode and MIN 
     static bool logIsStarted = false; 
     if ( (config.mode != 1 ) && (config.mode != 2 )) return true;
     if (logIsStarted) return true;
+    // not yet started
     if ( (config.minField < 64) && ( currentTlm[config.minField] <= config.minValue )) return false; 
     if ( (config.maxField < 64) && ( currentTlm[config.maxField] >= config.maxValue )) return false; 
     if (config.mode == 1 ) logIsStarted = true;
