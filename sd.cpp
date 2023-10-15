@@ -38,7 +38,7 @@ uint8_t SD_CS_PIN ;
 
 // parameters for sdfat configuration
 //#define SD_CONFIG SdSpiConfig(SD_CS_PIN, DEDICATED_SPI, SPI_CLOCK)
-#define SD_CONFIG SdSpiConfig(SD_CS_PIN, DEDICATED_SPI, SD_SCK_MHZ(16))
+//#define SD_CONFIG SdSpiConfig(SD_CS_PIN, DEDICATED_SPI, SD_SCK_MHZ(16))  // define is not use because we have to add the SPI(1)
 
 // Preallocate 1GiB file.
 const uint32_t PREALLOCATE_SIZE_MiB = 1UL; //1024UL;
@@ -88,9 +88,16 @@ void sdCsWrite(SdCsPin_t pin, bool level) {
 
 uint setupSdCard(){
     delay(1000);
-    SPI.setRX(config.pinSpiMiso);
-    SPI.setSCK(config.pinSpiSclk);
-    SPI.setTX(config.pinSpiMosi);
+    if (config.spiForSd == 0) {
+        SPI.setRX(config.pinSpiMiso);
+        SPI.setSCK(config.pinSpiSclk);
+        SPI.setTX(config.pinSpiMosi);
+    } else {
+        SPI1.setRX(config.pinSpiMiso);
+        SPI1.setSCK(config.pinSpiSclk);
+        SPI1.setTX(config.pinSpiMosi);
+    }
+
     // CS can use any pin and is defined in sd.begin
     // Initialize SD.
     if (!sd.begin(  SdSpiConfig(config.pinSpiCs, DEDICATED_SPI, SD_SCK_MHZ(20),  config.spiForSd == 0 ? &SPI : &SPI1))) {
