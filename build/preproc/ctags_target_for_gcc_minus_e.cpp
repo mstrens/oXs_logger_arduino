@@ -27,6 +27,7 @@
 # 27 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino" 2
 # 28 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino" 2
 # 29 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino" 2
+# 30 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino" 2
 
 extern CONFIG config;
 bool configIsValid = true;
@@ -80,14 +81,12 @@ void setup() {
     }
     setupConfig(); // retrieve the config parameters (crsf baudrate, voltage scale & offset, type of gps, failsafe settings)  
     checkConfig();
-    waitKeyPressed();
+
+        waitKeyPressed();
+
     if (configIsValid){
         rp2040.fifo.push(1); // send a command to other core to allow SD to set up first 
-
-        //setRgbColorOn(0,0,10);  // switch to blue during the setup of different sensors/pio/uart
-
         //Serial.println("Waiting end of creating csv file by other core");
-        //uint32_t endOfSetupCore1;  // setup will return 0 if OK, 
         if ( rp2040.fifo.pop() != 0){ // wait end of set up core and then in case of error set ledState
             ledState = STATE_NO_SD;
             handleLedState();
@@ -95,9 +94,8 @@ void setup() {
         Serial2.setRX(config.pinSerialRx);
         Serial2.setFIFOSize((1024*16) /* Size of uart fifo that receives data from oXs*/);
         Serial2.begin(config.serialBaudrate);
-
         //Serial.println("End of setup on core0");
-        setupQueues();
+        setupQueues(); // start 2 queues to communicate between the 2 cores over the index of bytes to be written/written on SD card 
 
 
 
@@ -114,7 +112,7 @@ void loop() {
     }
     handleLedState();
 
-        reportStats(20000 /* interval between 2 reports ; uncomment to avoid any report*/); // report some stats at some interval (msec)
+
 
 }
 
@@ -123,6 +121,8 @@ void setup1(){
     rp2040.fifo.pop(); // block until it get a value from main setup
     //Serial.println("Setup on core1 starting");
     // start sdfat and create a csv file; returned value = 0 if OK; else value is >0
+    setupRtc(); // check if sda/scl is defined 
+    getLoggerTime();
     rp2040.fifo.push(setupSdCard()); // allow core 0 to continue setup()
     //Serial.println("End of setup of sd card on core1");
 }
@@ -176,52 +176,3 @@ void setColorState(){ // set the colors based on the RF link
             break;
     }
 }
-
-
-/*
-  printUnusedStack();
-  // Read any Serial data.
-  clearSerialInput();
-
-  if (ERROR_LED_PIN >= 0) {
-    digitalWrite(ERROR_LED_PIN, LOW);
-  }
-  Serial.println();
-  Serial.println(F("type: "));
-  Serial.println(F("b - open existing bin file"));
-  Serial.println(F("c - convert file to csv"));
-  Serial.println(F("l - list files"));
-  Serial.println(F("p - print data to Serial"));
-  Serial.println(F("r - record data"));
-  Serial.println(F("t - test without logging"));
-  Serial.println(F("d - test with dummy data"));
-  
-  while (!Serial.available()) {
-    yield();
-  }
-  char c = tolower(Serial.read());
-  Serial.println();
-
-  if (c == 'b') {
-    openBinFile();
-  } else if (c == 'c') {
-    if (createCsvFile()) {
-      binaryToCsv();
-    }
-  } else if (c == 'l') {
-    Serial.println(F("ls:"));
-    sd.ls(&Serial, LS_DATE | LS_SIZE);
-  } else if (c == 'p') {
-    printData();
-  } else if (c == 'r') {
-    createBinFile();
-    logData();
-  } else if (c == 't') {
-    testSensor();
-  } else if (c == 'd') {
-    testDummyData(); 
-  } else {
-    Serial.println(F("Invalid entry"));
-  }
-}
-*/

@@ -1,5 +1,5 @@
-c:\Data\oXs_logger_arduino\build\sketch\oXs_logger_arduino.ino.cpp.o: \
- c:\Data\oXs_logger_arduino\build\sketch\oXs_logger_arduino.ino.cpp \
+c:\Data\oXs_logger_arduino\build\sketch\rtc.cpp.o: \
+ c:\Data\oXs_logger_arduino\build\sketch\rtc.cpp \
  C:\Users\Acer\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\3.3.2\cores\rp2040/Arduino.h \
  C:\Users\Acer\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\3.3.2\cores\rp2040/stdlib_noniso.h \
  C:\Users\Acer\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\3.3.2\cores\rp2040/RP2040Version.h \
@@ -115,11 +115,11 @@ c:\Data\oXs_logger_arduino\build\sketch\oXs_logger_arduino.ino.cpp.o: \
  c:\users\acer\appdata\local\arduino15\packages\rp2040\hardware\rp2040\3.3.2\pico-sdk\src\rp2040\hardware_regs\include\hardware\regs\uart.h \
  C:\Users\Acer\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\3.3.2\cores\rp2040/Bootsel.h \
  c:\users\acer\appdata\local\arduino15\packages\rp2040\hardware\rp2040\3.3.2\pico-sdk\src\rp2_common\pico_stdio\include\pico\stdio.h \
- c:\Data\oXs_logger_arduino\build\sketch\logger_config.h \
- c:\Data\oXs_logger_arduino\build\sketch\ws2812.h \
- c:\Data\oXs_logger_arduino\build\sketch\serial_in.h \
- c:\Data\oXs_logger_arduino\build\sketch\sd.h \
- c:\Data\oXs_logger_arduino\build\sketch\param.h \
- c:\users\acer\appdata\local\arduino15\packages\rp2040\hardware\rp2040\3.3.2\pico-sdk\src\common\pico_stdlib\include\pico\stdlib.h \
- c:\Data\oXs_logger_arduino\build\sketch\oXs_logger.h \
- c:\Data\oXs_logger_arduino\build\sketch\rtc.h
+ c:\Data\oXs_logger_arduino\build\sketch\rtc.h \
+ C:\Users\Acer\Documents\Arduino\libraries\RTCx\src/RTCx.h \
+ C:\Users\Acer\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\3.3.2\libraries\Wire\src/Wire.h \
+ C:\Users\Acer\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\3.3.2\cores\rp2040/api/HardwareI2C.h \
+ c:\users\acer\appdata\local\arduino15\packages\rp2040\hardware\rp2040\3.3.2\arduinocore-api\api\hardwarei2c.h \
+ c:\users\acer\appdata\local\arduino15\packages\rp2040\hardware\rp2040\3.3.2\pico-sdk\src\rp2_common\hardware_i2c\include\hardware\i2c.h \
+ c:\users\acer\appdata\local\arduino15\packages\rp2040\hardware\rp2040\3.3.2\pico-sdk\src\rp2040\hardware_structs\include\hardware\structs\i2c.h \
+ c:\users\acer\appdata\local\arduino15\packages\rp2040\hardware\rp2040\3.3.2\pico-sdk\src\rp2040\hardware_regs\include\hardware\regs\i2c.h

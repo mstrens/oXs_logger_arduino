@@ -25,6 +25,21 @@
     "Includepath": null
   },
   {
+    "Sourcefile": "c:\\Data\\oXs_logger_arduino\\build\\sketch\\rtc.cpp",
+    "Include": "RTCx.h",
+    "Includepath": "C:\\Users\\Acer\\Documents\\Arduino\\libraries\\RTCx\\src"
+  },
+  {
+    "Sourcefile": "c:\\Data\\oXs_logger_arduino\\build\\sketch\\rtc.cpp",
+    "Include": "Wire.h",
+    "Includepath": "C:\\Users\\Acer\\AppData\\Local\\Arduino15\\packages\\rp2040\\hardware\\rp2040\\3.3.2\\libraries\\Wire\\src"
+  },
+  {
+    "Sourcefile": "c:\\Data\\oXs_logger_arduino\\build\\sketch\\rtc.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
     "Sourcefile": "c:\\Data\\oXs_logger_arduino\\build\\sketch\\sd.cpp",
     "Include": "SdFat.h",
     "Includepath": "C:\\Users\\Acer\\Documents\\Arduino\\libraries\\SdFat\\src"
@@ -46,6 +61,16 @@
   },
   {
     "Sourcefile": "c:\\Data\\oXs_logger_arduino\\build\\sketch\\ws2812.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Acer\\Documents\\Arduino\\libraries\\RTCx\\src\\RTCx.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Acer\\AppData\\Local\\Arduino15\\packages\\rp2040\\hardware\\rp2040\\3.3.2\\libraries\\Wire\\src\\Wire.cpp",
     "Include": "",
     "Includepath": null
   },

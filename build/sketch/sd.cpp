@@ -74,14 +74,10 @@ uint8_t csvFileError = 255;
 
 // Modify these functions for your port expander or custom GPIO library.
 void sdCsInit(SdCsPin_t pin) {
-  //Serial.print("cs pin") ; Serial.println(pin);
-  //initCalls++;
   pinMode(pin, OUTPUT);
 }
 void sdCsWrite(SdCsPin_t pin, bool level) {
-  //writeCalls++;
   gpio_put ((uint) pin, level);
-  //digitalWrite(pin, level);
 }
 
 
@@ -107,10 +103,8 @@ uint setupSdCard(){
         return 1;
     }
     //Serial.println("Sd begin is done");
-    //Serial.println("trying to create csv");
 
     return createcsvFile(); // this function return 0 when there are no error
-    //Serial.println("End of setup SD card");
 }
 
 
@@ -160,12 +154,6 @@ uint createcsvFile() {
     return csvFileError;
   }
   Serial.print("log file will be in "); Serial.println(csvName);   
-  //if (!csvFile.preAllocate(PREALLOCATE_SIZE)) {
-  //  Serial.println("preAllocate failed");
-  //}
-  
-  //csvFileError = 0;
-  //Serial.println("calling logCsvHeader");   
   
   return logCsvHeader();   // write a csv header in the file    
 }
@@ -176,12 +164,6 @@ uint32_t maxWriteOnSdUs = 0;
 uint32_t maxSyncOnSdUs = 0;
 
 uint logCsvHeader(){            // write csv header in the file
-    //uint8_t headerBuffer[80];
-    //Serial.println("entering logcsvHeader");
-    //if (csvFileError) {
-    //    Serial.print("can not log csv header; csvFileError="); Serial.println(csvFileError);
-    //    return; // skip when file was not created
-    //}
     
     //Serial.println("writing Time");
     if (csvFile.write("Time (msec)") == 0){
@@ -259,8 +241,6 @@ void logOnSD(uint32_t writeIdx , uint16_t len){    // return the time in usec
             maxSyncOnSdUs = usec;
         }
         lastSyncMillis = millis();
-        //Serial.print(F("syncMicros:")); Serial.print(usec);
-        //Serial.print(F(" maxWriteMicros:")); Serial.println(maxWriteMicros);
     }
     if ( createDateTimeState == 1){ // 1 means that date/time is known but not yet registered on SD (2 = registered)  
         csvFile.timestamp(T_CREATE, (uint16_t) 2000+ (firstGpsDate>>24), (uint8_t) (firstGpsDate>>16), (uint8_t) (firstGpsDate>>8),\

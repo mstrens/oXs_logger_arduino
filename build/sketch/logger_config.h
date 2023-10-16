@@ -1,7 +1,7 @@
 #line 1 "c:\\Data\\oXs_logger_arduino\\logger_config.h"
 #pragma once
 
-#define VERSION "0.0.5"
+#define VERSION "0.0.6"
 //   -------------   Serial parameter to read data from oXs (use Serial2)
 #define SERIAL_IN_BAUDRATE 115200 // 230400      // 23000 bytes/sec
 #define SERIAL_IN_RX_GPIO 5            // pin used to read the data from oXs (on UART1) (gpio can be 5, 9, 21, 25)
@@ -72,12 +72,12 @@
                         0, 0, 0, 0, 0, 0, 0} 
 
 // ------------- reporting (on USB) to check for overrun and performance issue
-#define REPORT_INTERVAL_MS 20000 // interval between 2 reports ; uncomment to avoid any report
-
+//#define REPORT_INTERVAL_MS 20000 // interval between 2 reports ; uncomment to avoid any report
+#define WAIT_KEY_PRESS_BEFORE_STARTUP // to help debuging : when enabled, user must press a ket at power on (so he get all messages from checkConfig)
 
 // -------------- for testing we can generate dummy data using SERIAL1
 //#define GENERATE_TEST_UART0_TX   // uncomment to let UART0 (SERIAL1) generates dummy data
-#define SERIAL1_TX_PIN 0  // could be Tx pin = 0, 12 ,16, 28 UART0 = Serial1
+#define SERIAL1_TX_PIN 28  // could be Tx pin = 0, 12 ,16, 28 UART0 = Serial1
 #define TEST_INTERVAL_US (1000*1000)  // used when serial data are generate by this RP2040 (for debug only) with Serial1
                              
 //--------------- for info, list of index of all fields provided by oXs --------------------

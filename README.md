@@ -43,16 +43,21 @@ If you want to avoid wiring the rp2040 board with the SD card socket board, you 
 The RP2040 logger has to be connected to the Sd card socket. This requires 6 wires:
 * VCC (normally 3.3V but could be 5V depending on the sd card module that you use)
 * Gnd
-* gpio 5 (RP2040 logger) <=> CS (chip select from Sd card
-* gpio 4 (RP2040 logger) <=> MISO (from Sd card) 
-* gpio 6 (RP2040 logger) <=> SLCK (from Sd card)
-* gpio 7 (RP2040 logger) <=> MOSI (from Sd card)
+* CS (chip select from Sd card)
+* MISO (from Sd card) 
+* SLCK (from Sd card)
+* MOSI (from Sd card)
+The Sd card can use the first or the second SPI available on RP2040.
+Each SPI requires different gpio's.
+Selection of SPI and gpio's id done in logger_config.h file but can also be modified with usb commands.  
+
 
 
 RP2040 logger must also be connected to oXs with 3 wires:
 * VCC <=> VCC (max 6 v like oXs vcc) 
 * Gnd <=> Gnd
-* gpio 0 (RP2040 logger) <=> log Gpio (as defined by your self on oXs)   
+* gpio 5 (=UART1) from RP2040 logger <=> log Gpio (as defined by your self on oXs)  
+Note: 5 can be replaced by 9, 21 or 25 in logger_config.h file or with usb commands.
 
 
 ## --------- Software -------------------
@@ -72,14 +77,14 @@ If you just want to use it, there is (in most cases) no need to install/use any 
 \
 You can now use a serial terminal (like putty , the one from arduino IDE, the serial monitor from VSCode,...) and set it up for 115200 baud 8N1
 * while the RP2040 is connected to the pc with the USB cable, connect this serial terminal to the serial port from the RP2040
-* when the RP2040 start (or pressing the reset button), press Enter to display the current configuration or ?+ENTER to display the commands to change the configuration.
-* if you want to change some parameters (mainly the list of fields to include in the CSV), fill in the command (code=value) and press the enter.
+* when the RP2040 starts (or pressing the reset button), press Enter to display the current configuration or ?+ENTER to display the commands to change the configuration.
+* if you want to change some parameters (e.g. the list of fields to include in the CSV), fill in the command (code=value) and press the enter.
 * the RP2040 should then display the new (saved) config.
 Note: do not forget to setup your serial monitor in such a way that it sent CR+LF (carriage return / line feed) each time you press enter.
 
 \
 \
-Developers can change the firmware with Arduino IDE (configured for RP2040 boards and sdfat lib).
+Developers can change the firmware with Arduino IDE (configured for RP2040 boards AND sdfat library). You have also to specify the type of board being used (e.g. RP2040 Zero)
 * Once the tools are installed, copy all files provided on github on you PC (keeping the same structure).  
 * Open VScode or Arduino IDE and open the folder where you put the oXs logger files.
 * In VScode, press CTRL+SHIFT+P and in the input line that appears, enter (select) Arduino : Upload  
