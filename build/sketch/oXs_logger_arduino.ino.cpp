@@ -59,11 +59,11 @@ void setup();
 void loop();
 #line 119 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
 void setup1();
-#line 129 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
+#line 128 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
 void loop1();
-#line 133 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
+#line 132 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
 void handleLedState();
-#line 150 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
+#line 149 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
 void setColorState();
 #line 52 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
 void waitKeyPressed(){
@@ -138,7 +138,6 @@ void setup1(){
     //Serial.println("Setup on core1 starting");
     // start sdfat and create a csv file; returned value = 0 if OK; else value is >0
     setupRtc();   // check if sda/scl is defined 
-    getLoggerTime(); 
     rp2040.fifo.push(setupSdCard()); // allow core 0 to continue setup()
     //Serial.println("End of setup of sd card on core1");
 }

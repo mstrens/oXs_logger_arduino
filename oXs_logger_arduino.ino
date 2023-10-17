@@ -121,7 +121,6 @@ void setup1(){
     //Serial.println("Setup on core1 starting");
     // start sdfat and create a csv file; returned value = 0 if OK; else value is >0
     setupRtc();   // check if sda/scl is defined 
-    getLoggerTime(); 
     rp2040.fifo.push(setupSdCard()); // allow core 0 to continue setup()
     //Serial.println("End of setup of sd card on core1");
 }

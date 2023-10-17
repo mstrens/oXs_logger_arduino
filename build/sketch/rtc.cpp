@@ -74,9 +74,9 @@ void setLoggerTime(char * s){
     rtc.setClock(&tm1, RTCx::TIME);
 }
 
-
+/*
 //          to do : store the date&time and set a flag
-void getLoggerTime(){
+//void getLoggerTime(){
 	if ((config.pinSda == 255) || (config.pinScl ==  255) ){ // only if SDA/SCL are defined
         return ;
     }
@@ -88,3 +88,4 @@ void getLoggerTime(){
     rtc.readClock(tm);
     RTCx::printIsotime(Serial, tm).println();
 }
+*/

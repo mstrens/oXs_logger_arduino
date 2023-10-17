@@ -3,4 +3,4 @@
 
 void setupRtc();
 void setLoggerTime(char * s);
-void getLoggerTime();
+//void getLoggerTime();
