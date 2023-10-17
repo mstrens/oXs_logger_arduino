@@ -16,6 +16,9 @@
 #include <errno.h>   // used by strtol() to check for errors 
 #include "Arduino.h"
 #include "sd.h"
+#include "RTCx.h"
+#include "rtc.h"
+
 // commands could be in following form:
 // ADD = xx/yy with xx and yy are interger in range 0/63
 // DEL = XX/YY
@@ -35,6 +38,7 @@ uint16_t cmdBufferPos = 0;
 
 char const * listOfCsvFieldName[64] = LIST_OF_CSV_FIELD_NAME; 
 
+extern bool rtcInstalled;
 
 CONFIG config;
 uint8_t debugTlm = 'N';
@@ -346,16 +350,15 @@ void processCmd(){  // process the command entered via usb; called when a full c
     
 
     // change for SDA pin
-    /*
     if ( strcmp("SDA", pkey) == 0 ) { 
         ui = strtoul(pvalue, &ptr, 10);
         if ( *ptr != 0x0){
             printf("Error : pin must be an unsigned integer\n");
-        } else if ( !(ui==2 or ui==6 or ui==10 or ui==14 or ui==18 or ui==22 or ui==26 or ui ==255)) {
-            printf("Error : pin must be 2, 6, 10, 14, 18, 22, 26 or 255\n");
+        } else if ( !(ui==0 or ui==4 or ui==8 or ui==12 or ui==16 or ui==20 or ui==24 or ui ==255)) { // 0, 4 8 12 16 20 24
+            printf("Error : pin must be 0, 4, 8, 12, 16, 20, 24 or 255\n");
         } else {    
             //config.pinSda = ui;
-            printf("Pin for SDA (baro) = %u\n" , config.pinSda );
+            printf("Pin for SDA (RTC) = %u\n" , config.pinSda );
             updateConfig = true;
         }
     }
@@ -364,15 +367,15 @@ void processCmd(){  // process the command entered via usb; called when a full c
         ui = strtoul(pvalue, &ptr, 10);
         if ( *ptr != 0x0){
             printf("Error : pin must be an unsigned integer\n");
-        } else if ( !(ui==3 or ui==7 or ui==11 or ui==15 or ui==19 or ui==23 or ui==27 or ui ==255)) {
-            printf("Error : pin must be 3, 7, 11, 15, 19, 23, 27 or 255\n");
+        } else if ( !(ui==1 or ui==5 or ui==9 or ui==13 or ui==17 or ui==21 or ui==25 or ui ==255)) { 
+            printf("Error : pin must be 1, 5, 9, 13, 17, 21, 25 or 255\n");
         } else {    
             //config.pinScl = ui;
-            printf("Pin for Scl (baro) = %u\n" , config.pinScl );
+            printf("Pin for Scl (RTC) = %u\n" , config.pinScl );
             updateConfig = true;
         }
     }
-    */    
+    
     // change baudrate
     if ( strcmp("BAUD", pkey) == 0 ) { // if the key is BAUD
         ui = strtoul(pvalue, &ptr, 10);
@@ -494,6 +497,7 @@ void processCmd(){  // process the command entered via usb; called when a full c
 
 
     // after this line, put commands that does nor require to update the config; set also wrongCmd = false
+    
     // print content of current csv file
     if ( strcmp("PF", pkey) == 0 ) {
         Serial.println("printing CSV content");
@@ -501,6 +505,21 @@ void processCmd(){  // process the command entered via usb; called when a full c
         wrongCmd = false;  
     }
     
+    // set date and time (only if RTC is installed)
+    if ( strcmp("DT", pkey) == 0 ) {
+        if (rtcInstalled == false){
+            Serial.println("Error : Command DT not allowed when not RTC chip is installed" );
+            wrongCmd = true;
+        } else {
+            //pvalue point to the str with the date and time in format YYYY-MM-DDTHH:MM
+            if ((* (pvalue+2) != '-') || (* (pvalue+5) != '-') || (* (pvalue+8) != 'T') || (* (pvalue+11) != ':')) {
+                Serial.println("Error : for command DT, format must be YY-MM-DDTHH:MM" );
+                wrongCmd = true;
+            } else {
+                setLoggerTime( pvalue );  // 0 = update time (not alarm,...)
+            }
+        }
+    }
     if ( (updateConfig == false) && (wrongCmd == true) ) {
         Serial.println ("Wrong command: command is discarded");
     }
@@ -545,7 +564,9 @@ void checkConfig(){     // set configIsValid
     addPinToCount(config.pinSpiSclk);
     addPinToCount(config.pinSerialRx);
     addPinToCount(config.pinLed);
-    
+    addPinToCount(config.pinSda);
+    addPinToCount(config.pinScl);
+        
     for (uint8_t i = 0 ; i<30; i++) {
         if (pinCount[i] > 1) {
             Serial.print("Error in parameters: pin "); Serial.print(i); Serial.print("is used ");
@@ -595,26 +616,18 @@ void checkConfig(){     // set configIsValid
       }  
       
     } 
-    
 
-    /*
     if ( (config.pinSda != 255 and config.pinScl==255) or
          (config.pinScl != 255 and config.pinSda==255) ) {
         printf("Error in parameters: SDA and SCL must both be defined or unused\n");
         configIsValid=false;
     }
-    */
+
     if ( configIsValid == false) {
         Serial.println("\nAttention: error in config parameters");
     } else {
         Serial.println("\nConfig parameters are OK");
-    }
-//    if ( sequencerIsValid == false) {
-//        printf("\nAttention: error in sequencer parameters\n");
-//    } else {
-//        printf("\nSequencer parameters are OK\n");
-//    }
-    
+    }    
     Serial.println("Press ? + Enter to get help about the commands");
 }
 

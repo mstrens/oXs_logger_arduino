@@ -24,8 +24,9 @@ struct CONFIG{
     uint8_t maxField = MAX_FIELD;
     int32_t maxValue = MAX_VALUE;
     uint8_t mode = MODE ;
-    uint16_t minInterval = MIN_INTERVAL_MS ; 
-    
+    uint16_t minInterval = MIN_INTERVAL_MS ;
+    uint8_t pinSda = GPIO_SDA;
+    uint8_t pinScl = GPIO_SCL;
 };
 
 void handleUSBCmd(void);

@@ -122,4 +122,7 @@ c:\Data\oXs_logger_arduino\build\sketch\rtc.cpp.o: \
  c:\users\acer\appdata\local\arduino15\packages\rp2040\hardware\rp2040\3.3.2\arduinocore-api\api\hardwarei2c.h \
  c:\users\acer\appdata\local\arduino15\packages\rp2040\hardware\rp2040\3.3.2\pico-sdk\src\rp2_common\hardware_i2c\include\hardware\i2c.h \
  c:\users\acer\appdata\local\arduino15\packages\rp2040\hardware\rp2040\3.3.2\pico-sdk\src\rp2040\hardware_structs\include\hardware\structs\i2c.h \
- c:\users\acer\appdata\local\arduino15\packages\rp2040\hardware\rp2040\3.3.2\pico-sdk\src\rp2040\hardware_regs\include\hardware\regs\i2c.h
+ c:\users\acer\appdata\local\arduino15\packages\rp2040\hardware\rp2040\3.3.2\pico-sdk\src\rp2040\hardware_regs\include\hardware\regs\i2c.h \
+ c:\Data\oXs_logger_arduino\build\sketch\logger_config.h \
+ c:\Data\oXs_logger_arduino\build\sketch\param.h \
+ c:\users\acer\appdata\local\arduino15\packages\rp2040\hardware\rp2040\3.3.2\pico-sdk\src\common\pico_stdlib\include\pico\stdlib.h

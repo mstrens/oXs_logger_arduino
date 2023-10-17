@@ -8,11 +8,11 @@
 #define SERIAL_IN_FIFO_LEN (1024*16)      // Size of uart fifo that receives data from oXs
 
 
-//----------------- for SD card we can use first or second SPI with following GPIO ---------------
+//----------------- for SD card we can use first or the second SPI with following GPIO ---------------
 // for first SPI (SPI),  MISO must be  0 4 16 20 ; Clock  2 6 18 22 // MOSI   3 7 19 23
 // for second SPI (SPI1), MISO must be  8 12 24 28; Clock  10 14 26 // MOSI   11 15 27
-// note : the board Challenger with build in sdcard uses SPI1 and gpio Clock 10, Mosi 11 , miso 12 and Cs 9
 
+// note : the Challenger board with build in sdcard uses SPI1 and gpio Clock 10, Mosi 11 , miso 12 and Cs 9
 #define SPI_FOR_SD 1  // must be 0 (first spi = SPI) or 1 (second spi = SPI1)
 
 #define SPI_MISO   12  // MISO   0 4 16 20 (SPI)   or  8 12 24 28 (SPI1) 
@@ -20,6 +20,16 @@
 #define SPI_MOSI   11  // MOSI   3 7 19 23 (SPI)   or  11 15 27   (SPI1)
 
 #define SPI_CS   9  // can  be a GPIO between 0 and 29
+
+//----------------- for RTC, we use I2C0 (wWIRE) ----------------------------------
+// RTC is optional. When logger get date&time from GPS, it uses them as creation date&time of log file.
+// note : the Challenger board with build in RTC uses SDA = 0 and SCL = 1
+
+//sda may be 0, 4 8 12 16 20 24
+#define GPIO_SDA 0         // set to 255 when no RTC is installed
+//scl may be 1, 5, 9, 13, 17, 21, 25
+#define GPIO_SCL 1        //  set to 255 when no RTC is installed
+
 
 //----------------- oXs fields to include in the CSV log file ----------------------
 // list of 64 X true (insert) or false (omit); one for each field in sequence of index (see list of index below)

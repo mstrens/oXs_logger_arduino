@@ -119,4 +119,6 @@ c:\Data\oXs_logger_arduino\build\sketch\param.cpp.o: \
  C:\Users\Acer\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\3.3.2\cores\rp2040/ccount.pio.h \
  C:\Users\Acer\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\3.3.2\cores\rp2040/SerialPIO.h \
  C:\Users\Acer\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\3.3.2\cores\rp2040/Bootsel.h \
- c:\Data\oXs_logger_arduino\build\sketch\sd.h
+ c:\Data\oXs_logger_arduino\build\sketch\sd.h \
+ C:\Users\Acer\Documents\Arduino\libraries\RTCx\src/RTCx.h \
+ c:\Data\oXs_logger_arduino\build\sketch\rtc.h
