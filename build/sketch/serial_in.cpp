@@ -84,7 +84,7 @@ extern uint8_t ledState;
 uint32_t firstGpsDate; // store the first GPS date (to avoid race issue)
 uint32_t firstGpsTime; // idem for time
 uint8_t createDateTimeState = 0; // flag to know if the file creation date and time is already registered
-                                 // 0 = date/time unknown, 1 date/time known but not yet registered on SD ,2 = registered  
+                                 // 0 = date/time unknown, 1 date/time known with GPS but not yet registered on SD ,3 = registered  
 
 uint32_t lastCsvWritteMs = 0 ; // used to check that we have the minimum interval between 2 csv log entries
 

@@ -245,7 +245,7 @@ void logOnSD(uint32_t writeIdx , uint16_t len){    // return the time in usec
     if ( createDateTimeState == 1){ // 1 means that date/time is known but not yet registered on SD (2 = registered)  
         csvFile.timestamp(T_CREATE, (uint16_t) 2000+ (firstGpsDate>>24), (uint8_t) (firstGpsDate>>16), (uint8_t) (firstGpsDate>>8),\
             (uint8_t) (firstGpsTime>>24), (uint8_t) (firstGpsTime>>16), (uint8_t) (firstGpsTime>>8) );
-        createDateTimeState = 2; // avoid to update the creation timestamp twice    
+        createDateTimeState = 3; // avoid to update the creation timestamp twice    
     }    
 }
 

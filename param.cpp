@@ -513,6 +513,7 @@ void processCmd(){  // process the command entered via usb; called when a full c
             Serial.println("Error : Command DT not allowed when not RTC chip is installed" );
             wrongCmd = true;
         } else {
+            pvalue = skipWhiteSpace(pvalue);
             //pvalue point to the str with the date and time in format YYYY-MM-DDTHH:MM
             if ((* (pvalue+2) != '-') || (* (pvalue+5) != '-') || (* (pvalue+8) != 'T') || (* (pvalue+11) != ':')) {
                 Serial.println("Error : for command DT, format must be YY-MM-DDTHH:MM" );
