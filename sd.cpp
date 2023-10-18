@@ -4,8 +4,8 @@
 #include "SdFat.h"
 #include "param.h"
 #include "oXs_logger.h"
-
-
+#include "rtc.h"
+#include "RTCx.h"
 
 extern CONFIG config;
 extern char const * listOfCsvFieldName[] ; 
@@ -248,5 +248,12 @@ void logOnSD(uint32_t writeIdx , uint16_t len){    // return the time in usec
     }    
 }
 
-
+void updateCreateFile( struct RTCx::tm *tm1){ // tm1 contains date & time
+    Serial.print("   ---- RTC year = "); Serial.println(tm1->tm_year);
+    Serial.print("   ---- RTC month = "); Serial.println(tm1->tm_mon);
+    Serial.print("   ---- RTC day = "); Serial.println(tm1->tm_mday);
+    csvFile.timestamp(T_CREATE, (uint16_t) tm1->tm_year, (uint8_t) tm1->tm_mon , (uint8_t) tm1->tm_mday,\
+            (uint8_t) tm1->tm_hour, (uint8_t) tm1->tm_min,(uint8_t) tm1->tm_sec  );
+    createDateTimeState = 3; // avoid to update the creation timestamp twice        
+}
 

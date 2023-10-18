@@ -27,8 +27,10 @@
 #include "param.h"
 #include "oXs_logger.h"
 #include "rtc.h"
+#include "RTCx.h"
 
 extern CONFIG config;
+extern bool rtcInstalled ; 
 bool configIsValid = true;
 bool configIsValidPrev = true;
 bool multicoreIsRunning = true;
@@ -120,8 +122,21 @@ void setup1(){
     rp2040.fifo.pop(); // block until it get a value from main setup
     //Serial.println("Setup on core1 starting");
     // start sdfat and create a csv file; returned value = 0 if OK; else value is >0
-    setupRtc();   // check if sda/scl is defined 
-    rp2040.fifo.push(setupSdCard()); // allow core 0 to continue setup()
+    setupRtc();   // check if sda/scl is defined
+    if (rtcInstalled){
+        struct RTCx::tm tm1;
+	    if (rtc.readClock(tm1)){
+                
+        }    
+    }
+    int setupSdCode = setupSdCard() ; // setupSdCard return 0 if OK, 1 in case of error
+    if (rtcInstalled){
+        struct RTCx::tm tm1;
+	    if (rtc.readClock( tm1)){
+            updateCreateFile(&tm1);        
+        }    
+    }
+    rp2040.fifo.push(setupSdCode); // allow core 0 to continue setup(); 
     //Serial.println("End of setup of sd card on core1");
 }
 

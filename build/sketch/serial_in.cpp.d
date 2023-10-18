@@ -119,6 +119,7 @@ c:\Data\oXs_logger_arduino\build\sketch\serial_in.cpp.o: \
  C:\Users\Acer\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\3.3.2\cores\rp2040/Bootsel.h \
  c:\Data\oXs_logger_arduino\build\sketch\logger_config.h \
  c:\Data\oXs_logger_arduino\build\sketch\sd.h \
+ C:\Users\Acer\Documents\Arduino\libraries\RTCx\src/RTCx.h \
  c:\users\acer\appdata\local\arduino15\packages\rp2040\hardware\rp2040\3.3.2\pico-sdk\src\rp2_common\hardware_resets\include\hardware\resets.h \
  c:\users\acer\appdata\local\arduino15\packages\rp2040\hardware\rp2040\3.3.2\pico-sdk\src\rp2040\hardware_structs\include\hardware\structs\resets.h \
  c:\users\acer\appdata\local\arduino15\packages\rp2040\hardware\rp2040\3.3.2\pico-sdk\src\rp2040\hardware_regs\include\hardware\regs\resets.h \

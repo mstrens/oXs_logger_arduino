@@ -119,6 +119,7 @@ c:\Data\oXs_logger_arduino\build\sketch\oXs_logger_arduino.ino.cpp.o: \
  c:\Data\oXs_logger_arduino\build\sketch\ws2812.h \
  c:\Data\oXs_logger_arduino\build\sketch\serial_in.h \
  c:\Data\oXs_logger_arduino\build\sketch\sd.h \
+ C:\Users\Acer\Documents\Arduino\libraries\RTCx\src/RTCx.h \
  c:\Data\oXs_logger_arduino\build\sketch\param.h \
  c:\users\acer\appdata\local\arduino15\packages\rp2040\hardware\rp2040\3.3.2\pico-sdk\src\common\pico_stdlib\include\pico\stdlib.h \
  c:\Data\oXs_logger_arduino\build\sketch\oXs_logger.h \

@@ -117,6 +117,7 @@ c:\Data\oXs_logger_arduino\build\sketch\sd.cpp.o: \
  c:\users\acer\appdata\local\arduino15\packages\rp2040\hardware\rp2040\3.3.2\pico-sdk\src\rp2040\hardware_regs\include\hardware\regs\uart.h \
  C:\Users\Acer\AppData\Local\Arduino15\packages\rp2040\hardware\rp2040\3.3.2\cores\rp2040/Bootsel.h \
  c:\users\acer\appdata\local\arduino15\packages\rp2040\hardware\rp2040\3.3.2\pico-sdk\src\rp2_common\pico_stdio\include\pico\stdio.h \
+ C:\Users\Acer\Documents\Arduino\libraries\RTCx\src/RTCx.h \
  C:\Users\Acer\Documents\Arduino\libraries\SdFat\src/SdFat.h \
  C:\Users\Acer\Documents\Arduino\libraries\SdFat\src/ExFatLib/ExFatLib.h \
  C:\Users\Acer\Documents\Arduino\libraries\SdFat\src/ExFatLib/ExFatFormatter.h \
@@ -180,4 +181,5 @@ c:\Data\oXs_logger_arduino\build\sketch\sd.cpp.o: \
  C:\Users\Acer\Documents\Arduino\libraries\SdFat\src/common/SysCall.h \
  c:\Data\oXs_logger_arduino\build\sketch\param.h \
  c:\users\acer\appdata\local\arduino15\packages\rp2040\hardware\rp2040\3.3.2\pico-sdk\src\common\pico_stdlib\include\pico\stdlib.h \
- c:\Data\oXs_logger_arduino\build\sketch\oXs_logger.h
+ c:\Data\oXs_logger_arduino\build\sketch\oXs_logger.h \
+ c:\Data\oXs_logger_arduino\build\sketch\rtc.h
