@@ -214,7 +214,7 @@ void handleSerialIn(){
         maxTimeBetween2HandleSerialInMs = now - lastCallToHandleSerialInMs; 
     }
     lastCallToHandleSerialInMs = now; 
-    if ((now - lastValidDataMs) > 5000){  // check that we got at least some valid data within 5 sec
+    if ((now - lastValidDataMs) > 20000){  // check that we got at least some valid data within 20 sec
         Serial.print("No data within "); Serial.println(now - lastValidDataMs);
         ledState = STATE_NO_DATA;             // when no data, we will change the led color
         lastValidDataMs = now; // avoid to repeat to often the message

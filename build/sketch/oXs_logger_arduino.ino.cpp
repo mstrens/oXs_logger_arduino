@@ -57,15 +57,15 @@ uint32_t lastBlinkMillis;
 void waitKeyPressed();
 #line 65 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
 void setup();
-#line 107 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
+#line 109 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
 void loop();
-#line 121 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
+#line 123 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
 void setup1();
-#line 143 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
+#line 139 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
 void loop1();
-#line 147 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
+#line 143 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
 void handleLedState();
-#line 164 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
+#line 160 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
 void setColorState();
 #line 54 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
 void waitKeyPressed(){
@@ -119,6 +119,8 @@ void setup() {
         #endif
         //watchdog_enable(3500, 0); // require an update once every 3500 msec
     }
+    Serial.println("end of setup");
+    delay(1000);
 }
 //------------------------------------------------------------------------------
 void loop() {
@@ -140,12 +142,6 @@ void setup1(){
     //Serial.println("Setup on core1 starting");
     // start sdfat and create a csv file; returned value = 0 if OK; else value is >0
     setupRtc();   // check if sda/scl is defined
-    if (rtcInstalled){
-        struct RTCx::tm tm1;
-	    if (rtc.readClock(tm1)){
-                
-        }    
-    }
     int setupSdCode = setupSdCard() ; // setupSdCard return 0 if OK, 1 in case of error
     if (rtcInstalled){
         struct RTCx::tm tm1;

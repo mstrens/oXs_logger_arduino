@@ -248,11 +248,11 @@ void logOnSD(uint32_t writeIdx , uint16_t len){    // return the time in usec
     }    
 }
 
-void updateCreateFile( struct RTCx::tm *tm1){ // tm1 contains date & time
-    Serial.print("   ---- RTC year = "); Serial.println(tm1->tm_year);
-    Serial.print("   ---- RTC month = "); Serial.println(tm1->tm_mon);
+void updateCreateFile( struct RTCx::tm *tm1){ // tm1 contains date & time ; for YYYY we must add 1900, for MM we must add 1
+    Serial.print("   ---- RTC year = "); Serial.println(tm1->tm_year+1900);
+    Serial.print("   ---- RTC month = "); Serial.println(tm1->tm_mon+1);
     Serial.print("   ---- RTC day = "); Serial.println(tm1->tm_mday);
-    csvFile.timestamp(T_CREATE, (uint16_t) tm1->tm_year, (uint8_t) tm1->tm_mon , (uint8_t) tm1->tm_mday,\
+    csvFile.timestamp(T_CREATE, (uint16_t) tm1->tm_year + 1900, (uint8_t) tm1->tm_mon +1, (uint8_t) tm1->tm_mday,\
             (uint8_t) tm1->tm_hour, (uint8_t) tm1->tm_min,(uint8_t) tm1->tm_sec  );
     createDateTimeState = 3; // avoid to update the creation timestamp twice        
 }

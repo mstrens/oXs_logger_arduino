@@ -103,6 +103,8 @@ void setup() {
 
         //watchdog_enable(3500, 0); // require an update once every 3500 msec
     }
+    Serial.println("end of setup");
+    delay(1000);
 }
 //------------------------------------------------------------------------------
 void loop() {
@@ -124,12 +126,6 @@ void setup1(){
     //Serial.println("Setup on core1 starting");
     // start sdfat and create a csv file; returned value = 0 if OK; else value is >0
     setupRtc(); // check if sda/scl is defined
-    if (rtcInstalled){
-        struct RTCx::tm tm1;
-     if (rtc.readClock(tm1)){
-
-        }
-    }
     int setupSdCode = setupSdCard() ; // setupSdCard return 0 if OK, 1 in case of error
     if (rtcInstalled){
         struct RTCx::tm tm1;

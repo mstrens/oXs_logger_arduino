@@ -156,7 +156,7 @@ void processCmd(){  // process the command entered via usb; called when a full c
         printInstructions(); 
         return;  
     }
-    if (cmdBuffer[0] != 0x0){
+    if (cmdBuffer[0] != 0x0){ 
         removeSpaces((char *) cmdBuffer);
         char * equalPos = strchr( (char*)cmdBuffer, '=');  // search position of '='
         if (equalPos != NULL){ // there is = so search for value
@@ -169,7 +169,7 @@ void processCmd(){  // process the command entered via usb; called when a full c
     upperStr(pkey);
     upperStr(pvalue);
     // pkey point to the key (before '=')
-    // pvalue point to the value (it can be a range)
+    // pvalue point to the value (it can be a range); 
     Serial.println(" ");
     Serial.print("Cmd to execute: ");   
     if (pkey) {Serial.print(" "); Serial.print(pkey);}
@@ -359,7 +359,7 @@ void processCmd(){  // process the command entered via usb; called when a full c
         } else if ( !(ui==0 or ui==4 or ui==8 or ui==12 or ui==16 or ui==20 or ui==24 or ui ==255)) { // 0, 4 8 12 16 20 24
             Serial.println("Error : pin must be 0, 4, 8, 12, 16, 20, 24 or 255");
         } else {    
-            //config.pinSda = ui;
+            config.pinSda = ui;
             Serial.print("Pin for SDA (RTC) = "); Serial.println(config.pinSda);
             updateConfig = true;
         }
@@ -372,7 +372,7 @@ void processCmd(){  // process the command entered via usb; called when a full c
         } else if ( !(ui==1 or ui==5 or ui==9 or ui==13 or ui==17 or ui==21 or ui==25 or ui ==255)) { 
             Serial.println("Error : pin must be 1, 5, 9, 13, 17, 21, 25 or 255");
         } else {    
-            //config.pinScl = ui;
+            config.pinScl = ui;
             Serial.print("Pin for Scl (RTC) = "); Serial.println(config.pinScl );
             updateConfig = true;
         }
@@ -509,17 +509,19 @@ void processCmd(){  // process the command entered via usb; called when a full c
     
     // set date and time (only if RTC is installed)
     if ( strcmp("DT", pkey) == 0 ) {
-        if (rtcInstalled == false){
-            Serial.println("Error : Command DT not allowed when not RTC chip is installed" );
+        if (rtcInstalled == false){  
+            Serial.println("Error : Command DT not allowed when no RTC chip is installed" );
             wrongCmd = true;
         } else {
-            pvalue = skipWhiteSpace(pvalue);
+            //pvalue = skipWhiteSpace(pvalue);
             //pvalue point to the str with the date and time in format YYYY-MM-DDTHH:MM
+            Serial.print("first char = "); Serial.println(* (pvalue),HEX);
             if ((* (pvalue+2) != '-') || (* (pvalue+5) != '-') || (* (pvalue+8) != 'T') || (* (pvalue+11) != ':')) {
                 Serial.println("Error : for command DT, format must be YY-MM-DDTHH:MM" );
                 wrongCmd = true;
             } else {
-                setLoggerTime( pvalue );  // 0 = update time (not alarm,...)
+                setLoggerTime( pvalue );  // update time (not alarm,...)
+                wrongCmd = false;  
             }
         }
     }
@@ -573,7 +575,7 @@ void checkConfig(){     // set configIsValid
     for (uint8_t i = 0 ; i<30; i++) {
         if (pinCount[i] > 1) {
             Serial.print("Error in parameters: pin "); Serial.print(i); Serial.print("is used ");
-            Serial.print(pinCount[i]);Serial.println("times");
+            Serial.print(pinCount[i]);Serial.println(" times");
             configIsValid=false;
             pinIsduplicated= true;
         }          
@@ -703,7 +705,8 @@ void printConfig(){
 const uint8_t *flash_target_contents = (const uint8_t *) (XIP_BASE + FLASH_CONFIG_OFFSET);
 
 void __not_in_flash_func(saveConfig)() {
-    uint8_t buffer[FLASH_PAGE_SIZE] = {0xff};
+    uint8_t buffer[FLASH_PAGE_SIZE] ;
+    memset(buffer, 0xff, FLASH_PAGE_SIZE);  // fil buffer with 0xFF
     memcpy(&buffer[0], &config, sizeof(config));
     Serial.print("size="); Serial.println(sizeof(config));
     sleep_ms(100);
@@ -745,10 +748,12 @@ void removeSpaces(char *str)
  
     // Traverse the given string. If current character
     // is not space, then place it at index 'count++'
-    for (int i = 0; str[i]; i++)
-        if ( ! isspace( (int) str[i] ))
+    for (int i = 0; str[i]; i++){
+        if ( ! isspace( (int) str[i] )){
             str[count++] = str[i]; // here count is
                                    // incremented
+        }                           
+    }                               
     str[count] = '\0';
 }
 
