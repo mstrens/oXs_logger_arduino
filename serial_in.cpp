@@ -538,7 +538,7 @@ void fillCsvBuffer(){    // wait for enough free space, then write a csv record 
                     break;
                 } else {                                                   // reset write pos
                     writeIdx=0;
-                    Serial.println("Reset writeIdx")  ;      
+                    //Serial.println("Reset writeIdx")  ;      
                     continue;                                              // restart the checks
                 }
             } else {   // readIdx is greater than witeIdx

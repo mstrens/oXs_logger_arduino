@@ -60,7 +60,7 @@ void setLoggerTime(char * s){
         return; 
     }
 	struct RTCx::tm tm1;
-	tm1.tm_year = atoi(s) + 10;
+	tm1.tm_year = atoi(s) ;
 	s += 3;
 	tm1.tm_mon = atoi(s) - 1;
 	s += 3;

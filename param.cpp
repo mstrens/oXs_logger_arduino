@@ -355,12 +355,12 @@ void processCmd(){  // process the command entered via usb; called when a full c
     if ( strcmp("SDA", pkey) == 0 ) { 
         ui = strtoul(pvalue, &ptr, 10);
         if ( *ptr != 0x0){
-            printf("Error : pin must be an unsigned integer\n");
+            Serial.println("Error : pin must be an unsigned integer");
         } else if ( !(ui==0 or ui==4 or ui==8 or ui==12 or ui==16 or ui==20 or ui==24 or ui ==255)) { // 0, 4 8 12 16 20 24
-            printf("Error : pin must be 0, 4, 8, 12, 16, 20, 24 or 255\n");
+            Serial.println("Error : pin must be 0, 4, 8, 12, 16, 20, 24 or 255");
         } else {    
             //config.pinSda = ui;
-            printf("Pin for SDA (RTC) = %u\n" , config.pinSda );
+            Serial.print("Pin for SDA (RTC) = "); Serial.println(config.pinSda);
             updateConfig = true;
         }
     }
@@ -368,12 +368,12 @@ void processCmd(){  // process the command entered via usb; called when a full c
     if ( strcmp("SCL", pkey) == 0 ) { 
         ui = strtoul(pvalue, &ptr, 10);
         if ( *ptr != 0x0){
-            printf("Error : pin must be an unsigned integer\n");
+            Serial.println("Error : pin must be an unsigned integer");
         } else if ( !(ui==1 or ui==5 or ui==9 or ui==13 or ui==17 or ui==21 or ui==25 or ui ==255)) { 
-            printf("Error : pin must be 1, 5, 9, 13, 17, 21, 25 or 255\n");
+            Serial.println("Error : pin must be 1, 5, 9, 13, 17, 21, 25 or 255");
         } else {    
             //config.pinScl = ui;
-            printf("Pin for Scl (RTC) = %u\n" , config.pinScl );
+            Serial.print("Pin for Scl (RTC) = "); Serial.println(config.pinScl );
             updateConfig = true;
         }
     }
