@@ -1,7 +1,7 @@
 #line 1 "c:\\Data\\oXs_logger_arduino\\logger_config.h"
 #pragma once
 
-#define VERSION "0.0.11"
+#define VERSION "0.0.12"
 //   -------------   Serial parameter to read data from oXs (use Serial2)
 #define SERIAL_IN_BAUDRATE 115200 // 230400      // 23000 bytes/sec
 #define SERIAL_IN_RX_GPIO 5            // pin used to read the data from oXs (on UART1) (gpio can be 5, 9, 21, 25)

@@ -194,6 +194,9 @@ uint8_t toString(int32_t in, uint8_t nDec, char * buf){ // format the int32 with
 
 // so, if circular buffer is full, we do not process any more the incomong serial data (they are still filled in the serial fifo managed by arduino)
 
+#define DEBUG_CURRENT_AND_CSV_MSEC 30000
+uint32_t lastDebugCurrentAndCsvMs = 0;
+bool printDebugCurrentAndCsvMs = false;
 
 void handleSerialIn(){
     static IN_STATE inState=IN_WAIT_SYNC; 
@@ -250,6 +253,16 @@ void handleSerialIn(){
                 // when no enough free space, wait to write in the buffer
                 if ( (millis() - lastCsvWritteMs) >= config.minInterval){ //  wait the minimum required time between 2 log
                     if (csvToLog()) {      // check if a csv may be written based on mode and MIN/MAX
+                        #ifdef DEBUG_CURRENT_AND_CSV_MSEC                    
+                        if ( (now - lastDebugCurrentAndCsvMs) > DEBUG_CURRENT_AND_CSV_MSEC){
+                            lastDebugCurrentAndCsvMs = now;
+                            printDebugCurrentAndCsvMs = true;
+                            Serial.println("current:");         // print current values
+                            for (uint8_t i = 0; i < 63 ; i++){
+                                Serial.print(i);Serial.print("="); Serial.println(currentTlm[i]);
+                            }
+                        }
+                        #endif
                         fillCsvBuffer();
                         lastCsvWritteMs = millis(); 
                     }    
@@ -595,7 +608,7 @@ void writeRec(){    // convert currentTlm[] (with filtering) in a csv format wri
             csvBuf[writeIdx++] = ',';  // put comma
             switch (i){
                 case 6:  // GPS date (must be in format 20YY:MM:DD)
-                    if ( currentTlm[i] != 0 ) { // do not fill when data = 0 to avoid 2000:00:00
+                    if ( currentTlm[i] != 0 ) { // do not fill when date = 0 to avoid 2000:00:00
                         writeIdx += write2Digits(20 , &csvBuf[writeIdx]); // add century
                         writeIdx += write2Digits((uint8_t) (currentTlm[i]>>24) , &csvBuf[writeIdx]); // add century
                         csvBuf[writeIdx++] = ':';  // put :
@@ -605,11 +618,13 @@ void writeRec(){    // convert currentTlm[] (with filtering) in a csv format wri
                     }
                     break;
                 case 7:  // GPS time (must be in format HH:MM:SS)
-                    writeIdx += write2Digits((uint8_t) (currentTlm[i]>>24) , &csvBuf[writeIdx]); // add HH
-                    csvBuf[writeIdx++] = ':';  // put :
-                    writeIdx += write2Digits((uint8_t) (currentTlm[i]>>16) , &csvBuf[writeIdx]); // add MM
-                    csvBuf[writeIdx++] = ':';  // put :
-                    writeIdx += write2Digits((uint8_t) (currentTlm[i]>>8) , &csvBuf[writeIdx]); // add SS
+                    if ( currentTlm[i] != 0 ) { // do not fill when time = 0 to avoid 00:00:00
+                        writeIdx += write2Digits((uint8_t) (currentTlm[i]>>24) , &csvBuf[writeIdx]); // add HH
+                        csvBuf[writeIdx++] = ':';  // put :
+                        writeIdx += write2Digits((uint8_t) (currentTlm[i]>>16) , &csvBuf[writeIdx]); // add MM
+                        csvBuf[writeIdx++] = ':';  // put :
+                        writeIdx += write2Digits((uint8_t) (currentTlm[i]>>8) , &csvBuf[writeIdx]); // add SS
+                    }
                     break;
                 case 0: // for long & lat, we use a format "XX.xxxxxx YY.yyyyyy"
                     writeIdx += toString(currentTlm[i], tlmFormat[i] , &csvBuf[writeIdx]); // fill the buffer
@@ -628,7 +643,16 @@ void writeRec(){    // convert currentTlm[] (with filtering) in a csv format wri
     // add CR+LF
     csvBuf[writeIdx++] = 0X0D;
     csvBuf[writeIdx++] = 0X0A;
-    
+    #ifdef DEBUG_CURRENT_AND_CSV_MSEC
+    if (printDebugCurrentAndCsvMs) {
+        Serial.println("CSV:");
+        for (uint32_t i = beginIdx; i< writeIdx; i++ ){
+            Serial.print( (char) csvBuf[i]);
+        }
+        Serial.println(" ");
+        printDebugCurrentAndCsvMs = false; 
+    }    
+    #endif
     // add the from and nbr bytes to the queue
     writeQueue_t writeQueueEntry;
     writeQueueEntry.idx = beginIdx;     
@@ -693,3 +717,4 @@ void writeOnSdcard(){
         }	
     }// end while
 }
+
