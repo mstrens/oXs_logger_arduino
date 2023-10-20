@@ -45,4 +45,6 @@ c:\Data\oXs_logger_arduino\build\sketch\ws2812.cpp.o: \
  c:\users\acer\appdata\local\arduino15\packages\rp2040\hardware\rp2040\3.3.2\pico-sdk\src\rp2_common\hardware_watchdog\include\hardware\watchdog.h \
  c:\users\acer\appdata\local\arduino15\packages\rp2040\hardware\rp2040\3.3.2\pico-sdk\src\rp2040\hardware_structs\include\hardware\structs\watchdog.h \
  c:\users\acer\appdata\local\arduino15\packages\rp2040\hardware\rp2040\3.3.2\pico-sdk\src\rp2040\hardware_regs\include\hardware\regs\watchdog.h \
+ c:\Data\oXs_logger_arduino\build\sketch\logger_config.h \
+ c:\Data\oXs_logger_arduino\build\sketch\param.h \
  c:\Data\oXs_logger_arduino\build\sketch\ws2812.h

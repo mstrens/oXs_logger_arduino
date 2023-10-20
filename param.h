@@ -13,7 +13,7 @@ struct CONFIG{
     uint8_t pinSpiMosi = SPI_MOSI;
     uint8_t pinSpiSclk = SPI_SCLK; 
     uint8_t pinSerialRx = SERIAL_IN_RX_GPIO;
-    uint8_t pinLed = 16;
+    uint8_t pinLed = RGB_LED_GPIO;
     uint8_t protocol = 'O' ; // O = oXs + csv
     uint32_t serialBaudrate = SERIAL_IN_BAUDRATE;
     uint8_t ledInverted;

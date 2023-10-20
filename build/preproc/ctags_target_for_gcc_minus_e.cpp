@@ -71,9 +71,6 @@ void setup() {
     }
     delay(100);
 
-    setupLed();
-    setRgbColorOn(0,0,10); // start with blue color
-
 
     if (watchdog_caused_reboot()) {
         Serial.println("Rebooted by Watchdog!");
@@ -83,6 +80,10 @@ void setup() {
     }
     setupConfig(); // retrieve the config parameters (crsf baudrate, voltage scale & offset, type of gps, failsafe settings)  
     checkConfig();
+    setupLed();
+    setRgbColorOn(0,0,10); // start with blue color
+
+
 
 
 

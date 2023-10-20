@@ -57,15 +57,15 @@ uint32_t lastBlinkMillis;
 void waitKeyPressed();
 #line 65 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
 void setup();
-#line 109 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
+#line 110 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
 void loop();
-#line 123 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
+#line 124 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
 void setup1();
-#line 139 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
+#line 140 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
 void loop1();
-#line 143 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
+#line 144 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
 void handleLedState();
-#line 160 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
+#line 161 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
 void setColorState();
 #line 54 "c:\\Data\\oXs_logger_arduino\\oXs_logger_arduino.ino"
 void waitKeyPressed(){
@@ -87,9 +87,6 @@ void setup() {
     }
     delay(100);
 
-    setupLed();
-    setRgbColorOn(0,0,10); // start with blue color
-  
     
     if (watchdog_caused_reboot()) {
         Serial.println("Rebooted by Watchdog!");
@@ -99,6 +96,10 @@ void setup() {
     }
     setupConfig(); // retrieve the config parameters (crsf baudrate, voltage scale & offset, type of gps, failsafe settings)  
     checkConfig();
+    setupLed();
+    setRgbColorOn(0,0,10); // start with blue color
+  
+  
     #ifdef WAIT_KEY_PRESS_BEFORE_STARTUP
         waitKeyPressed();
     #endif    

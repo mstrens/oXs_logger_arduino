@@ -1,6 +1,6 @@
 #pragma once
 
-#define VERSION "0.0.13"
+#define VERSION "0.0.15"
 //   -------------   Serial parameter to read data from oXs (use Serial2)
 #define SERIAL_IN_BAUDRATE 115200 // 230400      // 23000 bytes/sec
 #define SERIAL_IN_RX_GPIO 5            // pin used to read the data from oXs (on UART1) (gpio can be 5, 9, 21, 25)
@@ -19,6 +19,9 @@
 #define SPI_MOSI   11  // MOSI   3 7 19 23 (SPI)   or  11 15 27   (SPI1)
 
 #define SPI_CS   9  // can  be a GPIO between 0 and 29
+
+//----------------- RGB Led -------------------------------------------------------
+#define RGB_LED_GPIO 16   //GPIO used for a RGB led    
 
 //----------------- for RTC, we use I2C0 (wWIRE) ----------------------------------
 // RTC is optional. When logger get date&time from GPS, it uses them as creation date&time of log file.

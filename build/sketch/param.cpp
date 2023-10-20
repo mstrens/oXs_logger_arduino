@@ -93,7 +93,7 @@ void printInstructions(){
     Serial.println("      C (continuous = log always), T (Triggered = start when MIN & MAX match) , F (Filtered = log when MIN & MAX match)");
     Serial.println("- To change the MIN, enter MINF=XX (for the field index) and enter MINV=YYYYY (for the value)");
     Serial.println("- To change the MAX, enter MAXF=XX (for the field index) and enter MINV=YYYYY (for the value)");
-    
+    Serial.println("- To change the gpio used for a RGB led, enter RGB=XX (with XX = 0, 1,...,29 or 255 for no RGB)");    
     Serial.println("- To change (invert) led color, enter LED=N or LED=I");
     Serial.println("- To change the gpio that get the data from oXs, enter DATA= XX  (with XX = 5, 9, 21, 25)");
     Serial.println("- To change the baudrate used by oXs, enter BAUD= XXXXXX  (with XXXXXX = the baudrate e.g. 15200)");
@@ -403,6 +403,22 @@ void processCmd(){  // process the command entered via usb; called when a full c
             Serial.println("Error : protocol must be O (oXs + CSV)");
         }
     }
+
+    // change for RGB Led gpio
+    if ( strcmp("RGB", pkey) == 0 ) { 
+        ui = strtoul(pvalue, &ptr, 10);
+        if ( *ptr != 0x0){
+            Serial.println("Error : gpio must be an unsigned integer");
+        } else if  ( !(ui <=29 or ui ==255)) { 
+            Serial.println("Error : gpio must be in range 0/29 or 255 (when no RGB)");
+        } else {    
+            config.pinLed = ui;
+            Serial.print("gpio for RGB led = "); Serial.println(config.pinLed );
+            updateConfig = true;
+        }
+    }
+    
+
     // change led color
     if ( strcmp("LED", pkey) == 0 ) {
         if (strcmp("N", pvalue) == 0) {
@@ -668,8 +684,8 @@ void printConfig(){
     Serial.print("    Baudrate = "); Serial.println(config.serialBaudrate);
 
     Serial.println("RTC uses:");
-    Serial.println("    SDA = "); Serial.println(config.pinSda);
-    Serial.println("    SCL = "); Serial.println(config.pinScl);
+    Serial.print("    SDA = "); Serial.println(config.pinSda);
+    Serial.print("    SCL = "); Serial.println(config.pinScl);
     if ( (config.pinSda !=255) && (config.pinScl != 255)){
         if ( rtcInstalled ) {
             Serial.print ("    Rtc is installed; date&time = ");
@@ -689,6 +705,11 @@ void printConfig(){
         Serial.println("Protocol is unknown")  ;
     }
     
+    if (config.pinLed == 255 ){
+        Serial.println("No RGB led is installed");
+    } else {
+        Serial.print("RGB led uses gpio ");Serial.println(config.pinLed);
+    }
     if (config.ledInverted == 'I'){
         Serial.println("Led color is inverted")  ;
     } else {
@@ -779,7 +800,7 @@ void setupConfig(){   // The config is uploaded at power on
         config.pinSpiMosi = SPI_MOSI;
         config.pinSpiSclk = SPI_SCLK; 
         config.pinSerialRx = SERIAL_IN_RX_GPIO;
-        config.pinLed = 16;
+        config.pinLed = RGB_LED_GPIO;
         config.protocol = 'O' ; // O = oXs + csv
         config.serialBaudrate = SERIAL_IN_BAUDRATE;
         config.ledInverted = 'N'; // not inverted
