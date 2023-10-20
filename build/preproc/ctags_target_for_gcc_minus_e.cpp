@@ -84,7 +84,7 @@ void setup() {
     setupConfig(); // retrieve the config parameters (crsf baudrate, voltage scale & offset, type of gps, failsafe settings)  
     checkConfig();
 
-        waitKeyPressed();
+
 
     if (configIsValid){
         rp2040.fifo.push(1); // send a command to other core to allow SD to set up first 

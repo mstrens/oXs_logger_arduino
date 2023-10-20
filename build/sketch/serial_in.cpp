@@ -194,7 +194,7 @@ uint8_t toString(int32_t in, uint8_t nDec, char * buf){ // format the int32 with
 
 // so, if circular buffer is full, we do not process any more the incomong serial data (they are still filled in the serial fifo managed by arduino)
 
-#define DEBUG_CURRENT_AND_CSV_MSEC 30000
+//#define DEBUG_CURRENT_AND_CSV_MSEC 30000
 uint32_t lastDebugCurrentAndCsvMs = 0;
 bool printDebugCurrentAndCsvMs = false;
 
@@ -345,9 +345,14 @@ void handleSerialIn(){
                         tempTlm[tempTlmCount].type = inType;
                         tempTlm[tempTlmCount].data = inData;
                         tempTlmCount++;
-                        //Serial.print(inType, HEX);
-                        //Serial.print(" ");
-                        //Serial.println(inData,HEX);
+                        //#define DEBUG_GPS_DATE
+                        #ifdef DEBUG_GPS_DATE
+                        if (inType == 6) {
+                            Serial.print(inType, HEX);
+                            Serial.print(" ");
+                            Serial.println(inData,HEX);
+                        }
+                        #endif
                         // wait for next data
                         inType=0;
                         inCount=0;
