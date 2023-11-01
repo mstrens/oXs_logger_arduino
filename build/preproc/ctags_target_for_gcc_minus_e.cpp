@@ -66,9 +66,9 @@ void waitKeyPressed(){
 void setup() {
     Serial.begin(115200); // uSB port used to debug
     // Wait for USB Serial
-    while (!Serial) {
-        yield();
-    }
+//    while (!Serial) {
+//        yield();
+//    }
     delay(100);
 
 
